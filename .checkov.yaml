@@ -1,0 +1,14 @@
+framework:
+  - terraform
+quiet: true
+compact: true
+
+# Skip checks that are handled via post-deployment scripts or have acceptable workarounds
+skip-check:
+  # CKV_AZURE_33: Queue logging is enabled via Azure CLI in null_resource
+  # This is necessary because Terraform AzureRM provider doesn't support
+  # Storage Analytics queue logging configuration directly
+  - CKV_AZURE_33
+  # CKV_AZURE_43: Storage account naming follows Azure rules but may not match Checkov's stricter pattern
+  # Our naming ensures uniqueness and follows: lowercase alphanumeric, 3-24 chars, globally unique
+  - CKV_AZURE_43

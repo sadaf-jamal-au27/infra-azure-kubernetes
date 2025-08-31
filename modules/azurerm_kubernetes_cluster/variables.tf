@@ -6,6 +6,19 @@ variable "node_count" {
   default = 1
 }
 variable "vm_size" {
-  default = "Standard_D2_v2"
+  description = "VM size for AKS nodes"
+  default     = "Standard_B2s" # Changed to available size in Central India
 }
+variable "log_analytics_workspace_id" {
+  description = "Log Analytics Workspace ID for monitoring"
+  type        = string
+  default     = null
+}
+
+variable "disk_encryption_set_id" {
+  description = "The ID of the Disk Encryption Set to use for disk encryption"
+  type        = string
+  default     = null
+}
+
 variable "tags" {}
