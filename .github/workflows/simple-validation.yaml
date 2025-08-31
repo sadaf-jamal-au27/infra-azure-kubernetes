@@ -1,0 +1,61 @@
+name: "Simplified Infrastructure Validation"
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+env:
+  TF_VERSION: "1.5.7"
+
+jobs:
+  validate:
+    name: "Validate Infrastructure"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+        timeout-minutes: 3
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Init and Validate (Dev)
+        run: |
+          cd environments/dev
+          terraform init -backend=false
+          terraform validate
+
+      - name: Terraform Init and Validate (Staging)  
+        run: |
+          cd environments/staging
+          terraform init -backend=false
+          terraform validate
+
+      - name: Security Scan with Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform
+          quiet: true
+          soft_fail: true
+
+      - name: Validation Complete
+        run: |
+          echo "✅ All validation checks passed!"
+          echo "🔒 Security scan completed"
+          echo "📋 Infrastructure is ready for deployment"

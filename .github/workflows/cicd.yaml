@@ -23,6 +23,7 @@ jobs:
   validation:
     name: "Code Validation"
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
       security-events: write
@@ -37,6 +38,9 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: true
+        timeout-minutes: 5
+        continue-on-error: false
 
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
