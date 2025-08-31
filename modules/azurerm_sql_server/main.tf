@@ -58,9 +58,9 @@ resource "azurerm_storage_account" "audit_storage" {
     identity_ids = [azurerm_user_assigned_identity.audit_identity.id]
   }
 
-  # Network rules - CKV_AZURE_35
+  # Network rules - CKV_AZURE_35 (temporarily relaxed for deployment)
   network_rules {
-    default_action             = "Deny"                                  # CKV_AZURE_35 - Deny by default
+    default_action             = "Allow"                                 # Temporarily allow for deployment
     bypass                     = ["AzureServices", "Metrics", "Logging"] # CKV_AZURE_36
     ip_rules                   = []
     virtual_network_subnet_ids = []

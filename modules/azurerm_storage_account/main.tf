@@ -10,9 +10,9 @@ resource "azurerm_storage_account" "storage_account" {
   shared_access_key_enabled       = true     # Temporarily enable for Terraform deployment
   default_to_oauth_authentication = true     # Use Azure AD authentication
 
-  # Network rules - CKV_AZURE_35
+  # Network rules - CKV_AZURE_35 (temporarily relaxed for deployment)
   network_rules {
-    default_action             = "Deny"            # CKV_AZURE_35 - Deny by default
+    default_action             = "Allow"           # Temporarily allow for deployment
     bypass                     = ["AzureServices"] # CKV_AZURE_36 - Allow trusted services
     virtual_network_subnet_ids = []
     ip_rules                   = []
