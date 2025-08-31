@@ -102,7 +102,7 @@ resource "azurerm_key_vault_access_policy" "storage_policy" {
 # Note: This requires Azure CLI and appropriate permissions
 resource "null_resource" "enable_queue_analytics" {
   count = var.enable_storage_analytics ? 1 : 0
-  
+
   provisioner "local-exec" {
     command = <<-EOT
       # Temporarily enable shared access key for queue logging configuration

@@ -32,16 +32,16 @@ module "key_vault" {
 }
 
 module "storage_account" {
-  depends_on                = [module.key_vault]
-  source                    = "../../modules/azurerm_storage_account"
-  sa_name                   = "sastaging${local.unique_suffix}"
-  rg_name                   = "rg-staging-todoapp-${local.unique_suffix}"
-  location                  = "centralindia"
-  key_vault_id              = module.key_vault.key_vault_id
-  tenant_id                 = data.azurerm_client_config.current.tenant_id
-  key_vault_access_policy   = module.key_vault.access_policy
-  enable_storage_analytics  = true
-  tags                      = local.common_tags
+  depends_on               = [module.key_vault]
+  source                   = "../../modules/azurerm_storage_account"
+  sa_name                  = "sastaging${local.unique_suffix}"
+  rg_name                  = "rg-staging-todoapp-${local.unique_suffix}"
+  location                 = "centralindia"
+  key_vault_id             = module.key_vault.key_vault_id
+  tenant_id                = data.azurerm_client_config.current.tenant_id
+  key_vault_access_policy  = module.key_vault.access_policy
+  enable_storage_analytics = true
+  tags                     = local.common_tags
 }
 
 module "acr" {
@@ -54,18 +54,18 @@ module "acr" {
 }
 
 module "sql_server" {
-  depends_on                = [module.rg, module.key_vault]
-  source                    = "../../modules/azurerm_sql_server"
-  sql_server_name           = "sql-staging-${local.unique_suffix}"
-  rg_name                   = "rg-staging-todoapp-${local.unique_suffix}"
-  location                  = "centralindia"
-  admin_username            = "devopsadmin"
-  admin_password            = "P@ssw0rd@456"
-  key_vault_id              = module.key_vault.key_vault_id
-  tenant_id                 = data.azurerm_client_config.current.tenant_id
-  key_vault_access_policy   = module.key_vault.access_policy
-  enable_storage_analytics  = true
-  tags                      = local.common_tags
+  depends_on               = [module.rg, module.key_vault]
+  source                   = "../../modules/azurerm_sql_server"
+  sql_server_name          = "sql-staging-${local.unique_suffix}"
+  rg_name                  = "rg-staging-todoapp-${local.unique_suffix}"
+  location                 = "centralindia"
+  admin_username           = "devopsadmin"
+  admin_password           = "P@ssw0rd@456"
+  key_vault_id             = module.key_vault.key_vault_id
+  tenant_id                = data.azurerm_client_config.current.tenant_id
+  key_vault_access_policy  = module.key_vault.access_policy
+  enable_storage_analytics = true
+  tags                     = local.common_tags
 }
 
 module "sql_db" {

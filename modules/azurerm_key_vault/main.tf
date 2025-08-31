@@ -6,8 +6,8 @@ resource "azurerm_key_vault" "key_vault" {
   resource_group_name         = var.rg_name
   enabled_for_disk_encryption = true
   tenant_id                   = data.azurerm_client_config.current.tenant_id
-  soft_delete_retention_days  = 90   # CKV_AZURE_42 - Increased from 7
-  purge_protection_enabled    = true # CKV_AZURE_110
+  soft_delete_retention_days  = 90        # CKV_AZURE_42 - Increased from 7
+  purge_protection_enabled    = true      # CKV_AZURE_110
   sku_name                    = "premium" # Changed to premium for HSM support
   # Temporarily enable public access for development with IP restrictions
   public_network_access_enabled = true

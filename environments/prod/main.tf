@@ -37,20 +37,20 @@ module "key_vault" {
 }
 
 module "sql_server" {
-  depends_on                 = [module.rg, module.key_vault]
-  source                     = "../../modules/azurerm_sql_server"
-  sql_server_name            = "sql-prod-${local.unique_suffix}"
-  rg_name                    = "rg-prod-todoapp-${local.unique_suffix}"
-  location                   = "centralindia"
-  admin_username             = "devopsadmin"
-  admin_password             = "P@ssw0rd@789"
-  key_vault_id               = module.key_vault.key_vault_id
-  tenant_id                  = data.azurerm_client_config.current.tenant_id
-  key_vault_access_policy    = module.key_vault.access_policy
-  security_alert_emails      = ["admin@todoapp.com"]
-  enable_private_endpoint    = false
-  enable_storage_analytics   = true
-  tags                       = local.common_tags
+  depends_on               = [module.rg, module.key_vault]
+  source                   = "../../modules/azurerm_sql_server"
+  sql_server_name          = "sql-prod-${local.unique_suffix}"
+  rg_name                  = "rg-prod-todoapp-${local.unique_suffix}"
+  location                 = "centralindia"
+  admin_username           = "devopsadmin"
+  admin_password           = "P@ssw0rd@789"
+  key_vault_id             = module.key_vault.key_vault_id
+  tenant_id                = data.azurerm_client_config.current.tenant_id
+  key_vault_access_policy  = module.key_vault.access_policy
+  security_alert_emails    = ["admin@todoapp.com"]
+  enable_private_endpoint  = false
+  enable_storage_analytics = true
+  tags                     = local.common_tags
 }
 
 module "sql_db" {

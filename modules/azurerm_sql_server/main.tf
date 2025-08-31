@@ -86,7 +86,7 @@ resource "azurerm_storage_account" "audit_storage" {
 # Note: This requires Azure CLI and appropriate permissions
 resource "null_resource" "enable_audit_queue_analytics" {
   count = var.enable_storage_analytics ? 1 : 0
-  
+
   provisioner "local-exec" {
     command = <<-EOT
       # Temporarily enable shared access key for queue logging configuration
