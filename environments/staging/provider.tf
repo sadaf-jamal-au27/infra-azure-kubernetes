@@ -9,7 +9,7 @@ terraform {
       version = "~>3.0"
     }
   }
-  
+
   # Remote backend for shared state management
   backend "azurerm" {
     resource_group_name  = "rg-terraform-backend"
@@ -22,5 +22,5 @@ terraform {
 provider "azurerm" {
   features {}
   subscription_id = "a72674d0-171e-41fb-bed8-d50db63bc0b4"
-  use_cli = false
+  use_cli         = false
 }

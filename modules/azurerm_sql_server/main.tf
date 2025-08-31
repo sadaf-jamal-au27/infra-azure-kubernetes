@@ -23,8 +23,8 @@ resource "azurerm_mssql_server" "sql_server" {
 
 # Add auditing for compliance
 resource "azurerm_mssql_server_extended_auditing_policy" "sql_audit" {
-  server_id                               = azurerm_mssql_server.sql_server.id
-  storage_endpoint                        = azurerm_storage_account.audit_storage.primary_blob_endpoint
+  server_id        = azurerm_mssql_server.sql_server.id
+  storage_endpoint = azurerm_storage_account.audit_storage.primary_blob_endpoint
   # Use storage account access key for development (managed identity requires role assignment permissions)
   storage_account_access_key              = azurerm_storage_account.audit_storage.primary_access_key
   storage_account_access_key_is_secondary = false
