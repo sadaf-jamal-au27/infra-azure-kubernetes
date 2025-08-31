@@ -9,12 +9,15 @@ terraform {
       version = "~>3.0"
     }
   }
-  #   backend "azurerm" {
-  #     resource_group_name  = ""
-  #     storage_account_name = ""
-  #     container_name       = ""
-  #     key                  = ""
-  #   }
+
+  # Remote backend configuration (commented until backend resources are created)
+  # Uncomment after running ./setup_backend.sh
+  # backend "azurerm" {
+  #   resource_group_name  = "rg-terraform-state"
+  #   storage_account_name = "terraformstatedev2024"
+  #   container_name       = "tfstate"
+  #   key                  = "dev/terraform.tfstate"
+  # }
 }
 
 provider "azurerm" {
