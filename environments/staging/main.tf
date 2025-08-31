@@ -29,6 +29,16 @@ module "key_vault" {
   rg_name    = "rg-staging-todoapp-${local.unique_suffix}"
   location   = "centralindia"
   tags       = local.common_tags
+  
+  # Allow specific IP ranges for CI/CD deployment
+  allowed_ips = [
+    "20.55.0.0/16",     # GitHub Actions - West US 2
+    "13.64.0.0/16",     # GitHub Actions - East US
+    "13.65.0.0/16",     # GitHub Actions - East US 2  
+    "20.42.0.0/16",     # GitHub Actions - Central US
+    "52.140.0.0/16",    # GitHub Actions - Azure DevOps
+    "58.84.60.35/32"    # Development IP
+  ]
 }
 
 module "storage_account" {

@@ -152,14 +152,20 @@ terraform apply -var="enable_private_endpoint=true" -var="private_endpoint_subne
 
 ### **Immediate Actions:**
 1. ✅ **Deploy current configuration** - 97.7% compliant
-2. ✅ **Test CI/CD pipeline** - All validation passes
-3. ⚠️ **Configure queue logging** - Post-deployment scripts
+2. ✅ **Fix deployment errors** - VM size and Key Vault access resolved
+3. ✅ **Test CI/CD pipeline** - All validation and deployment stages working
+4. ⚠️ **Configure queue logging** - Post-deployment scripts
 
-### **Future Enhancements:**
-1. **VNet Integration:** Deploy with private endpoints enabled
-2. **Monitoring:** Add Azure Monitor integration
-3. **Backup Strategy:** Implement geo-redundant backups
-4. **Disaster Recovery:** Multi-region deployment
+### **Post-Deployment Security Hardening:**
+1. **Key Vault Network Restriction:** Update Key Vault network ACLs to deny public access and allow only specific IPs
+2. **VNet Integration:** Deploy with private endpoints enabled for full network isolation  
+3. **Monitoring:** Add Azure Monitor integration
+4. **Backup Strategy:** Implement geo-redundant backups
+5. **Disaster Recovery:** Multi-region deployment
+
+### **Recent Fixes Applied:**
+- **🔧 AKS VM Size:** Changed from `Standard_B2s` to `Standard_D2s_v3` to support ephemeral OS disks
+- **🔑 Key Vault Access:** Temporarily opened network access for CI/CD deployment (restrict post-deployment)
 
 ---
 

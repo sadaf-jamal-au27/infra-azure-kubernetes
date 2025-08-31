@@ -7,7 +7,7 @@ variable "node_count" {
 }
 variable "vm_size" {
   description = "VM size for AKS nodes"
-  default     = "Standard_D2s_v3" # VM size that supports ephemeral OS disks
+  default     = "Standard_D4s_v3" # VM size with sufficient cache for ephemeral OS disks (200GB cache)
 }
 variable "log_analytics_workspace_id" {
   description = "Log Analytics Workspace ID for monitoring"

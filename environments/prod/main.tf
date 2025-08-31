@@ -34,6 +34,15 @@ module "key_vault" {
   rg_name    = "rg-prod-todoapp-${local.unique_suffix}"
   location   = "centralindia"
   tags       = local.common_tags
+  
+  # For production, use private endpoints and minimal IP access
+  enable_private_endpoint = false # Set to true when VNet is configured
+  allowed_ips = [
+    "20.55.0.0/16",     # GitHub Actions - West US 2
+    "13.64.0.0/16",     # GitHub Actions - East US
+    "52.140.0.0/16"     # GitHub Actions - Azure DevOps
+    # Note: Remove GitHub Actions IPs post-deployment for maximum security
+  ]
 }
 
 module "sql_server" {
