@@ -4,11 +4,17 @@ locals {
     "Owner"       = "TodoAppTeam"
     "Environment" = "dev"
   }
+  # Generate unique suffix for globally unique resources
+  unique_suffix = substr(sha256("${random_id.unique.hex}"), 0, 8)
+}
+
+resource "random_id" "unique" {
+  byte_length = 4
 }
 
 module "rg" {
   source      = "../../modules/azurerm_resource_group"
-  rg_name     = "rg-dev-todoapp"
+  rg_name     = "rg-dev-todoapp-${local.unique_suffix}"
   rg_location = "centralindia"
   rg_tags     = local.common_tags
 }
@@ -16,8 +22,8 @@ module "rg" {
 module "acr" {
   depends_on = [module.rg]
   source     = "../../modules/azurerm_container_registry"
-  acr_name   = "acrdevtodoapp"
-  rg_name    = "rg-dev-todoapp"
+  acr_name   = "acrdev${local.unique_suffix}"
+  rg_name    = "rg-dev-todoapp-${local.unique_suffix}"
   location   = "centralindia"
   tags       = local.common_tags
 }
@@ -25,8 +31,8 @@ module "acr" {
 module "sql_server" {
   depends_on      = [module.rg]
   source          = "../../modules/azurerm_sql_server"
-  sql_server_name = "sql-dev-todoapp"
-  rg_name         = "rg-dev-todoapp"
+  sql_server_name = "sql-dev-${local.unique_suffix}"
+  rg_name         = "rg-dev-todoapp-${local.unique_suffix}"
   location        = "centralindia"
   admin_username  = "devopsadmin"
   admin_password  = "P@ssw01rd@123"
@@ -45,9 +51,9 @@ module "sql_db" {
 module "aks" {
   depends_on = [module.rg]
   source     = "../../modules/azurerm_kubernetes_cluster"
-  aks_name   = "aks-dev-todoapp"
+  aks_name   = "aks-dev-${local.unique_suffix}"
   location   = "centralindia"
-  rg_name    = "rg-dev-todoapp"
-  dns_prefix = "aks-dev-todoapp"
+  rg_name    = "rg-dev-todoapp-${local.unique_suffix}"
+  dns_prefix = "aks-dev-${local.unique_suffix}"
   tags       = local.common_tags
 }
