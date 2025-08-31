@@ -118,9 +118,17 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
         continue-on-error: true
 
+      - name: Set Terraform Azure Environment Variables
+        run: |
+          echo "ARM_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)" >> $GITHUB_ENV
+          echo "ARM_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
+          echo "ARM_USE_CLI=false" >> $GITHUB_ENV
+
       - name: Verify Azure Authentication
         run: |
-          az account show || echo "Azure authentication failed - using default credentials"
+          az account show || echo "Azure authentication failed - using service principal"
         continue-on-error: true
 
       - name: Terraform Init
@@ -163,9 +171,17 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
         continue-on-error: true
 
+      - name: Set Terraform Azure Environment Variables
+        run: |
+          echo "ARM_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)" >> $GITHUB_ENV
+          echo "ARM_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
+          echo "ARM_USE_CLI=false" >> $GITHUB_ENV
+
       - name: Verify Azure Authentication
         run: |
-          az account show || echo "Azure authentication failed - using default credentials"
+          az account show || echo "Azure authentication failed - using service principal"
         continue-on-error: true
 
       - name: Terraform Init
@@ -210,9 +226,17 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
         continue-on-error: true
 
+      - name: Set Terraform Azure Environment Variables
+        run: |
+          echo "ARM_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)" >> $GITHUB_ENV
+          echo "ARM_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
+          echo "ARM_USE_CLI=false" >> $GITHUB_ENV
+
       - name: Verify Azure Authentication
         run: |
-          az account show || echo "Azure authentication failed - using default credentials"
+          az account show || echo "Azure authentication failed - using service principal"
         continue-on-error: true
 
       - name: Terraform Init
@@ -256,9 +280,17 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
         continue-on-error: true
 
+      - name: Set Terraform Azure Environment Variables
+        run: |
+          echo "ARM_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)" >> $GITHUB_ENV
+          echo "ARM_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
+          echo "ARM_USE_CLI=false" >> $GITHUB_ENV
+
       - name: Verify Azure Authentication
         run: |
-          az account show || echo "Azure authentication failed - using default credentials"
+          az account show || echo "Azure authentication failed - using service principal"
         continue-on-error: true
 
       - name: Terraform Init
