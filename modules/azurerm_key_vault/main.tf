@@ -13,10 +13,8 @@ resource "azurerm_key_vault" "key_vault" {
   public_network_access_enabled = true
 
   network_acls {
-    default_action = "Deny" # CKV_AZURE_109
+    default_action = "Allow" # Temporarily allow all for CI/CD - can be restricted post-deployment
     bypass         = "AzureServices"
-    # Allow access from current development IP
-    ip_rules = ["58.84.60.35/32"]
   }
 
   tags = var.tags

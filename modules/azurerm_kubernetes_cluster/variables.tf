@@ -7,7 +7,7 @@ variable "node_count" {
 }
 variable "vm_size" {
   description = "VM size for AKS nodes"
-  default     = "Standard_B2s" # Changed to available size in Central India
+  default     = "Standard_D2s_v3" # VM size that supports ephemeral OS disks
 }
 variable "log_analytics_workspace_id" {
   description = "Log Analytics Workspace ID for monitoring"
