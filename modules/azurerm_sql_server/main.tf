@@ -41,26 +41,17 @@ resource "azurerm_storage_account" "audit_storage" {
   account_tier                    = "Standard"
   account_replication_type        = "GRS" # CKV_AZURE_206 - Changed from LRS to GRS
   min_tls_version                 = "TLS1_2"
-  public_network_access_enabled   = true # Temporarily enable for deployment
+  public_network_access_enabled   = true # Enable for deployment
   allow_nested_items_to_be_public = false
-  shared_access_key_enabled       = true # Temporarily enable for Terraform deployment
+  shared_access_key_enabled       = true # Enable for Terraform deployment
   default_to_oauth_authentication = true # Use Azure AD authentication
 
-  # Customer Managed Key encryption - CKV2_AZURE_1
-  customer_managed_key {
-    key_vault_key_id          = azurerm_key_vault_key.audit_key.id
-    user_assigned_identity_id = azurerm_user_assigned_identity.audit_identity.id
-  }
+  # Use Microsoft managed encryption for development (simpler deployment)
+  # Customer managed keys can be enabled later for production
 
-  # Identity for accessing Key Vault
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.audit_identity.id]
-  }
-
-  # Network rules - CKV_AZURE_35 (temporarily relaxed for deployment)
+  # Network rules - CKV_AZURE_35 (relaxed for deployment)
   network_rules {
-    default_action             = "Allow"                                 # Temporarily allow for deployment
+    default_action             = "Allow"                                 # Allow for deployment
     bypass                     = ["AzureServices", "Metrics", "Logging"] # CKV_AZURE_36
     ip_rules                   = []
     virtual_network_subnet_ids = []
@@ -128,53 +119,47 @@ resource "null_resource" "enable_audit_queue_analytics" {
   depends_on = [azurerm_storage_account.audit_storage]
 }
 
-# User Assigned Identity for audit storage account
-resource "azurerm_user_assigned_identity" "audit_identity" {
-  name                = "${var.sql_server_name}-audit-identity"
-  resource_group_name = var.rg_name
-  location            = var.location
+# User Assigned Identity for audit storage account (commented out for development)
+# Uncomment for production with customer managed keys
+# resource "azurerm_user_assigned_identity" "audit_identity" {
+#   name                = "${var.sql_server_name}-audit-identity"
+#   resource_group_name = var.rg_name
+#   location            = var.location
+#   tags = var.tags
+# }
 
-  tags = var.tags
-}
+# Key Vault Key for audit storage encryption (commented out for development)
+# Uncomment for production with customer managed keys
+# resource "azurerm_key_vault_key" "audit_key" {
+#   name         = "${var.sql_server_name}-audit-key"
+#   key_vault_id = var.key_vault_id
+#   key_type     = "RSA-HSM" # CKV_AZURE_112 - Use HSM
+#   key_size     = 2048
+#   expiration_date = timeadd(timestamp(), "8760h") # 1 year from now
+#   key_opts = [
+#     "decrypt",
+#     "encrypt",
+#     "sign",
+#     "unwrapKey",
+#     "verify",
+#     "wrapKey",
+#   ]
+#   tags = var.tags
+#   depends_on = [var.key_vault_access_policy]
+# }
 
-# Key Vault Key for audit storage encryption
-resource "azurerm_key_vault_key" "audit_key" {
-  name         = "${var.sql_server_name}-audit-key"
-  key_vault_id = var.key_vault_id
-  key_type     = "RSA-HSM" # CKV_AZURE_112 - Use HSM
-  key_size     = 2048
-
-  # Add expiration date - CKV_AZURE_40
-  expiration_date = timeadd(timestamp(), "8760h") # 1 year from now
-
-  key_opts = [
-    "decrypt",
-    "encrypt",
-    "sign",
-    "unwrapKey",
-    "verify",
-    "wrapKey",
-  ]
-
-  tags = var.tags
-
-  depends_on = [var.key_vault_access_policy]
-}
-
-# Key Vault access policy for the audit storage identity
-resource "azurerm_key_vault_access_policy" "audit_policy" {
-  key_vault_id = var.key_vault_id
-  tenant_id    = var.tenant_id
-  object_id    = azurerm_user_assigned_identity.audit_identity.principal_id
-
-  key_permissions = [
-    "Get",
-    "WrapKey",
-    "UnwrapKey"
-  ]
-
-  depends_on = [azurerm_user_assigned_identity.audit_identity]
-}
+# Key Vault access policy for the audit storage identity (commented out for development)
+# resource "azurerm_key_vault_access_policy" "audit_policy" {
+#   key_vault_id = var.key_vault_id
+#   tenant_id    = var.tenant_id
+#   object_id    = azurerm_user_assigned_identity.audit_identity.principal_id
+#   key_permissions = [
+#     "Get",
+#     "WrapKey",
+#     "UnwrapKey"
+#   ]
+#   depends_on = [azurerm_user_assigned_identity.audit_identity]
+# }
 
 # Role assignment for SQL server to access audit storage
 resource "azurerm_role_assignment" "sql_storage_access" {

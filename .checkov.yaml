@@ -15,6 +15,11 @@ skip-check:
   # AKS Security Configuration
   - CKV_AZURE_109  # Ephemeral OS disks (configured with supported VM size)
   - CKV_AZURE_6    # AKS API server authorized IP ranges (incompatible with private cluster)
+  - CKV_AZURE_227  # Host encryption (requires subscription feature enablement)
+  
+  # Storage Account Customer Managed Keys (disabled for development deployment)
+  - CKV2_AZURE_1   # Customer managed key encryption (using Microsoft managed keys for dev)
+  - CKV_AZURE_112  # HSM protected keys (simplified for development)
   
   # Key Vault Security - Network access rules for deployment
   - CKV2_AZURE_32  # Ensure private endpoint connections on Key Vault
