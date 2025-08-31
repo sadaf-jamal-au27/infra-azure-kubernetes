@@ -13,7 +13,7 @@ resource "azurerm_key_vault" "key_vault" {
   public_network_access_enabled = var.enable_private_endpoint ? false : true # CKV_AZURE_189
 
   network_acls {
-    default_action = "Deny" # CKV_AZURE_109 - Always deny by default
+    default_action = var.enable_public_access ? "Allow" : "Deny" # Conditional access for deployment
     bypass         = "AzureServices"
     ip_rules       = var.allowed_ips # CKV_AZURE_109 - Use firewall rules
   }

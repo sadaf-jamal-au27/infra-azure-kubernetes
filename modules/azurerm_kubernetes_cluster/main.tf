@@ -10,9 +10,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   sku_tier                  = "Standard" # CKV_AZURE_170
   automatic_upgrade_channel = "stable"   # CKV_AZURE_171
 
-  api_server_access_profile {
-    authorized_ip_ranges = ["10.0.0.0/8"] # CKV_AZURE_6 - Restrict to private networks
-  }
+  # Note: Cannot use api_server_access_profile with authorized_ip_ranges when private_cluster_enabled = true
+  # Private cluster access is controlled via private endpoints and VNet peering
 
   default_node_pool {
     name                         = "default"

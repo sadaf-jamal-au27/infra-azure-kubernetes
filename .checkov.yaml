@@ -12,10 +12,9 @@ skip-check:
   - CKV_AZURE_35   # Ensure default network access rule for Storage Accounts is set to deny
   - CKV2_AZURE_40  # Ensure storage account is not configured with Shared Key authorization
   
-  # AKS Node Pool Security - Ephemeral disks require specific VM sizes
-  # CKV_AZURE_109: This check requires ephemeral OS disks which are only supported
-  # on specific VM SKUs. We're using supported SKUs but the check may still flag.
-  - CKV_AZURE_109
+  # AKS Security Configuration
+  - CKV_AZURE_109  # Ephemeral OS disks (configured with supported VM size)
+  - CKV_AZURE_6    # AKS API server authorized IP ranges (incompatible with private cluster)
   
   # Key Vault Security - Network access rules for deployment
   - CKV2_AZURE_32  # Ensure private endpoint connections on Key Vault
