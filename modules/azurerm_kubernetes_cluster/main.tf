@@ -1,27 +1,27 @@
+data "azurerm_client_config" "current" {}
+
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                    = var.aks_name
-  location                = var.location
-  resource_group_name     = var.rg_name
-  dns_prefix              = var.dns_prefix
-  private_cluster_enabled = false       # Set to false for now due to complexity
-  local_account_disabled  = true        # CKV_AZURE_141
-  sku_tier                = "Standard"  # CKV_AZURE_170
-  node_os_upgrade_channel = "NodeImage" # CKV_AZURE_171
+  name                      = var.aks_name
+  location                  = var.location
+  resource_group_name       = var.rg_name
+  dns_prefix                = var.dns_prefix
+  private_cluster_enabled   = true       # CKV_AZURE_115 - Enable private cluster
+  local_account_disabled    = true       # CKV_AZURE_141
+  sku_tier                  = "Standard" # CKV_AZURE_170
+  automatic_upgrade_channel = "stable"   # CKV_AZURE_171
 
   api_server_access_profile {
-    authorized_ip_ranges = ["0.0.0.0/32"] # CKV_AZURE_6 - Restrict access
+    authorized_ip_ranges = ["10.0.0.0/8"] # CKV_AZURE_6 - Restrict to private networks
   }
 
   default_node_pool {
     name                         = "default"
     node_count                   = var.node_count
     vm_size                      = var.vm_size
-    max_pods                     = 110  # CKV_AZURE_168
-    only_critical_addons_enabled = true # CKV_AZURE_232
-    # Use managed disks for better compatibility - CKV_AZURE_226
-    os_disk_type = "Managed"
-    # Enable encryption at host if supported by VM size - CKV_AZURE_227  
-    host_encryption_enabled = false # Disable for now due to VM size compatibility
+    max_pods                     = 110         # CKV_AZURE_168
+    only_critical_addons_enabled = true        # CKV_AZURE_232
+    os_disk_type                 = "Ephemeral" # CKV_AZURE_226 - Use ephemeral disks
+    host_encryption_enabled      = true        # CKV_AZURE_227 - Enable host encryption
   }
 
   network_profile {
@@ -34,6 +34,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   azure_policy_enabled = true # CKV_AZURE_116
+
+  azure_active_directory_role_based_access_control {
+    azure_rbac_enabled     = true
+    tenant_id              = data.azurerm_client_config.current.tenant_id
+    admin_group_object_ids = [] # Can be populated with specific admin groups later
+  }
 
   dynamic "oms_agent" {
     for_each = var.log_analytics_workspace_id != null ? [1] : []

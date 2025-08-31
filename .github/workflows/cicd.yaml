@@ -37,11 +37,17 @@ jobs:
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
 
-      - name: Terraform Init
-        run: terraform init -backend=false
+      - name: Terraform Init and Validate (Dev)
+        run: |
+          cd environments/dev
+          terraform init -backend=false
+          terraform validate
 
-      - name: Terraform Validate
-        run: terraform validate
+      - name: Terraform Init and Validate (Staging)  
+        run: |
+          cd environments/staging
+          terraform init -backend=false
+          terraform validate
 
       - name: Security Scan with Checkov
         uses: bridgecrewio/checkov-action@master

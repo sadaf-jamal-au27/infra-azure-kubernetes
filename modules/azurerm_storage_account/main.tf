@@ -7,13 +7,22 @@ resource "azurerm_storage_account" "storage_account" {
   min_tls_version                 = "TLS1_2" # CKV_AZURE_44
   public_network_access_enabled   = false    # CKV_AZURE_59, CKV_AZURE_190
   allow_nested_items_to_be_public = false    # CKV2_AZURE_47
-  shared_access_key_enabled       = false    # CKV2_AZURE_40
+  shared_access_key_enabled       = false    # CKV2_AZURE_40 - Disable shared key access
+  default_to_oauth_authentication = true     # Use Azure AD authentication
 
-  # Customer Managed Key encryption - CKV2_AZURE_1
-  customer_managed_key {
-    key_vault_key_id          = azurerm_key_vault_key.storage_key.id
-    user_assigned_identity_id = azurerm_user_assigned_identity.storage_identity.id
+  # Network rules - CKV_AZURE_35
+  network_rules {
+    default_action             = "Deny"            # CKV_AZURE_35 - Deny by default
+    bypass                     = ["AzureServices"] # CKV_AZURE_36 - Allow trusted services
+    virtual_network_subnet_ids = []
+    ip_rules                   = []
   }
+
+  # Customer Managed Key encryption - CKV2_AZURE_1 - Comment out for initial creation
+  # customer_managed_key {
+  #   key_vault_key_id          = azurerm_key_vault_key.storage_key.id
+  #   user_assigned_identity_id = azurerm_user_assigned_identity.storage_identity.id
+  # }
 
   # Identity for accessing Key Vault
   identity {
