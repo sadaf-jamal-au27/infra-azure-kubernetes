@@ -9,6 +9,18 @@ resource "azurerm_storage_account" "storage_account" {
   allow_nested_items_to_be_public = false    # CKV2_AZURE_47
   shared_access_key_enabled       = false    # CKV2_AZURE_40
 
+  # Customer Managed Key encryption - CKV2_AZURE_1
+  customer_managed_key {
+    key_vault_key_id          = azurerm_key_vault_key.storage_key.id
+    user_assigned_identity_id = azurerm_user_assigned_identity.storage_identity.id
+  }
+
+  # Identity for accessing Key Vault
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.storage_identity.id]
+  }
+
   blob_properties {
     delete_retention_policy {
       days = 30 # CKV2_AZURE_38
@@ -20,4 +32,49 @@ resource "azurerm_storage_account" "storage_account" {
   }
 
   tags = var.tags
+}
+
+# User Assigned Identity for storage account
+resource "azurerm_user_assigned_identity" "storage_identity" {
+  name                = "${var.sa_name}-identity"
+  resource_group_name = var.rg_name
+  location            = var.location
+
+  tags = var.tags
+}
+
+# Key Vault Key for storage encryption
+resource "azurerm_key_vault_key" "storage_key" {
+  name         = "${var.sa_name}-key"
+  key_vault_id = var.key_vault_id
+  key_type     = "RSA"
+  key_size     = 2048
+
+  key_opts = [
+    "decrypt",
+    "encrypt",
+    "sign",
+    "unwrapKey",
+    "verify",
+    "wrapKey",
+  ]
+
+  tags = var.tags
+
+  depends_on = [var.key_vault_access_policy]
+}
+
+# Key Vault access policy for the storage identity
+resource "azurerm_key_vault_access_policy" "storage_policy" {
+  key_vault_id = var.key_vault_id
+  tenant_id    = var.tenant_id
+  object_id    = azurerm_user_assigned_identity.storage_identity.principal_id
+
+  key_permissions = [
+    "Get",
+    "WrapKey",
+    "UnwrapKey"
+  ]
+
+  depends_on = [azurerm_user_assigned_identity.storage_identity]
 }

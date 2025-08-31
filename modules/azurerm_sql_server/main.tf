@@ -27,13 +27,84 @@ resource "azurerm_mssql_server_extended_auditing_policy" "sql_audit" {
 
 # Storage account for auditing
 resource "azurerm_storage_account" "audit_storage" {
-  name                     = "${replace(var.sql_server_name, "-", "")}audit"
-  resource_group_name      = var.rg_name
-  location                 = var.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
+  name                            = "${replace(var.sql_server_name, "-", "")}audit"
+  resource_group_name             = var.rg_name
+  location                        = var.location
+  account_tier                    = "Standard"
+  account_replication_type        = "LRS"
+  min_tls_version                 = "TLS1_2"
+  public_network_access_enabled   = false
+  allow_nested_items_to_be_public = false
+  shared_access_key_enabled       = false
+
+  # Customer Managed Key encryption - CKV2_AZURE_1
+  customer_managed_key {
+    key_vault_key_id          = azurerm_key_vault_key.audit_key.id
+    user_assigned_identity_id = azurerm_user_assigned_identity.audit_identity.id
+  }
+
+  # Identity for accessing Key Vault
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.audit_identity.id]
+  }
+
+  blob_properties {
+    delete_retention_policy {
+      days = 30
+    }
+  }
+
+  sas_policy {
+    expiration_period = "01.12:00:00"
+  }
 
   tags = var.tags
+}
+
+# User Assigned Identity for audit storage account
+resource "azurerm_user_assigned_identity" "audit_identity" {
+  name                = "${var.sql_server_name}-audit-identity"
+  resource_group_name = var.rg_name
+  location            = var.location
+
+  tags = var.tags
+}
+
+# Key Vault Key for audit storage encryption
+resource "azurerm_key_vault_key" "audit_key" {
+  name         = "${var.sql_server_name}-audit-key"
+  key_vault_id = var.key_vault_id
+  key_type     = "RSA"
+  key_size     = 2048
+
+  key_opts = [
+    "decrypt",
+    "encrypt",
+    "sign",
+    "unwrapKey",
+    "verify",
+    "wrapKey",
+  ]
+
+  tags = var.tags
+
+  depends_on = [var.key_vault_access_policy]
+}
+
+# Key Vault access policy for the audit storage identity
+resource "azurerm_key_vault_access_policy" "audit_policy" {
+  key_vault_id = var.key_vault_id
+  tenant_id    = var.tenant_id
+  object_id    = azurerm_user_assigned_identity.audit_identity.principal_id
+
+  key_permissions = [
+    "Get",
+    "WrapKey",
+    "UnwrapKey"
+  ]
+
+  depends_on = [azurerm_user_assigned_identity.audit_identity]
 }
 
 data "azurerm_client_config" "current" {}
