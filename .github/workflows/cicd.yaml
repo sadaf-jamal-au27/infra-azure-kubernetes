@@ -113,8 +113,14 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
 
       - name: Configure Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+        continue-on-error: true
+
+      - name: Verify Azure Authentication
         run: |
-          az account show || echo "Using default Azure credentials"
+          az account show || echo "Azure authentication failed - using default credentials"
         continue-on-error: true
 
       - name: Terraform Init
@@ -152,8 +158,14 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
 
       - name: Configure Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+        continue-on-error: true
+
+      - name: Verify Azure Authentication
         run: |
-          az account show || echo "Using default Azure credentials"
+          az account show || echo "Azure authentication failed - using default credentials"
         continue-on-error: true
 
       - name: Terraform Init
@@ -193,8 +205,14 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
 
       - name: Configure Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+        continue-on-error: true
+
+      - name: Verify Azure Authentication
         run: |
-          az account show || echo "Using default Azure credentials"
+          az account show || echo "Azure authentication failed - using default credentials"
         continue-on-error: true
 
       - name: Terraform Init
@@ -233,8 +251,14 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
 
       - name: Configure Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+        continue-on-error: true
+
+      - name: Verify Azure Authentication
         run: |
-          az account show || echo "Using default Azure credentials"
+          az account show || echo "Azure authentication failed - using default credentials"
         continue-on-error: true
 
       - name: Terraform Init
