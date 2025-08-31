@@ -9,21 +9,18 @@ terraform {
       version = "~>3.0"
     }
   }
-  # Backend configuration - commented out for initial setup
-  # Uncomment after running bootstrap-backend.sh
-  # backend "azurerm" {
-  #   resource_group_name  = "rg-tfstate-staging"
-  #   storage_account_name = "satfstatestaging001"
-  #   container_name       = "tfstate"
-  #   key                  = "staging.terraform.tfstate"
-  # }
+  
+  # Remote backend for shared state management
+  backend "azurerm" {
+    resource_group_name  = "rg-terraform-backend"
+    storage_account_name = "tfbackend62320"
+    container_name       = "tfstate"
+    key                  = "staging/terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
   features {}
   subscription_id = "a72674d0-171e-41fb-bed8-d50db63bc0b4"
-
-  # Use service principal authentication in CI/CD
-  # These environment variables will be set by GitHub Actions
   use_cli = false
 }
