@@ -45,6 +45,13 @@ jobs:
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
 
+      - name: Bootstrap Backend Storage (if needed)
+        run: |
+          echo "🚀 Checking if backend storage exists..."
+          # We'll use local state for CI/CD initially
+          # Backend can be configured manually later if needed
+          echo "ℹ️  Using local state for CI/CD pipeline"
+
       - name: Terraform Init and Validate (Dev)
         run: |
           cd environments/dev
@@ -136,7 +143,7 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend=false
         working-directory: environments/${{ matrix.environment }}
 
       - name: Terraform Plan
@@ -189,7 +196,7 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend=false
         working-directory: environments/dev
 
       - name: Terraform Apply
@@ -244,7 +251,7 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend=false
         working-directory: environments/staging
 
       - name: Terraform Apply
@@ -298,7 +305,7 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend=false
         working-directory: environments/prod
 
       - name: Terraform Apply

@@ -9,12 +9,14 @@ terraform {
       version = "~>3.0"
     }
   }
-  backend "azurerm" {
-    resource_group_name  = "rg-tfstate-prod"
-    storage_account_name = "satfstateprod001"
-    container_name       = "tfstate"
-    key                  = "prod.terraform.tfstate"
-  }
+  # Backend configuration - commented out for initial setup
+  # Uncomment after running bootstrap-backend.sh
+  # backend "azurerm" {
+  #   resource_group_name  = "rg-tfstate-prod"
+  #   storage_account_name = "satfstateprod001"
+  #   container_name       = "tfstate"
+  #   key                  = "prod.terraform.tfstate"
+  # }
 }
 
 provider "azurerm" {
