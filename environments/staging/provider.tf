@@ -20,7 +20,7 @@ terraform {
 provider "azurerm" {
   features {}
   subscription_id = "a72674d0-171e-41fb-bed8-d50db63bc0b4"
-  
+
   # Use service principal authentication in CI/CD
   # These environment variables will be set by GitHub Actions
   use_cli = false
