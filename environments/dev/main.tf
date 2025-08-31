@@ -48,16 +48,16 @@ module "key_vault" {
 }
 
 module "storage_account" {
-  depends_on              = [module.key_vault]
-  source                  = "../../modules/azurerm_storage_account"
-  sa_name                 = "sadev${local.unique_suffix}"
-  rg_name                 = "rg-dev-todoapp-${local.unique_suffix}"
-  location                = "centralindia"
-  key_vault_id            = module.key_vault.key_vault_id
-  tenant_id               = data.azurerm_client_config.current.tenant_id
-  key_vault_access_policy = module.key_vault.access_policy
-  enable_storage_analytics = false  # Disable for development to avoid Azure CLI dependency
-  tags                    = local.common_tags
+  depends_on               = [module.key_vault]
+  source                   = "../../modules/azurerm_storage_account"
+  sa_name                  = "sadev${local.unique_suffix}"
+  rg_name                  = "rg-dev-todoapp-${local.unique_suffix}"
+  location                 = "centralindia"
+  key_vault_id             = module.key_vault.key_vault_id
+  tenant_id                = data.azurerm_client_config.current.tenant_id
+  key_vault_access_policy  = module.key_vault.access_policy
+  enable_storage_analytics = false # Disable for development to avoid Azure CLI dependency
+  tags                     = local.common_tags
 }
 
 module "acr" {
@@ -76,7 +76,7 @@ module "sql_server" {
   rg_name                 = "rg-dev-todoapp-${local.unique_suffix}"
   location                = "centralindia"
   admin_username          = "devopsadmin"
-  admin_password          = var.sql_admin_password  # Use variable instead of hardcoded password
+  admin_password          = var.sql_admin_password # Use variable instead of hardcoded password
   key_vault_id            = module.key_vault.key_vault_id
   tenant_id               = data.azurerm_client_config.current.tenant_id
   key_vault_access_policy = module.key_vault.access_policy
