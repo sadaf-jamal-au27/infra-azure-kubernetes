@@ -30,7 +30,8 @@ resource "azurerm_mssql_server_extended_auditing_policy" "sql_audit" {
   # storage_account_access_key_is_secondary = false
   retention_in_days = 90 # CKV_AZURE_24
 
-  depends_on = [azurerm_role_assignment.sql_storage_access]
+  # Temporarily commented out for development - service principal lacks role assignment permissions
+  # depends_on = [azurerm_role_assignment.sql_storage_access]
 }
 
 # Storage account for auditing
@@ -161,14 +162,15 @@ resource "null_resource" "enable_audit_queue_analytics" {
 #   depends_on = [azurerm_user_assigned_identity.audit_identity]
 # }
 
-# Role assignment for SQL server to access audit storage
-resource "azurerm_role_assignment" "sql_storage_access" {
-  scope                = azurerm_storage_account.audit_storage.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_mssql_server.sql_server.identity[0].principal_id
-
-  depends_on = [azurerm_mssql_server.sql_server, azurerm_storage_account.audit_storage]
-}
+# Role assignment for SQL server to access audit storage (commented out for development)
+# Service principal needs elevated permissions to create role assignments
+# This can be configured manually or through Azure Portal for production
+# resource "azurerm_role_assignment" "sql_storage_access" {
+#   scope                = azurerm_storage_account.audit_storage.id
+#   role_definition_name = "Storage Blob Data Contributor"
+#   principal_id         = azurerm_mssql_server.sql_server.identity[0].principal_id
+#   depends_on = [azurerm_mssql_server.sql_server, azurerm_storage_account.audit_storage]
+# }
 
 # Security Alert Policy - CKV2_AZURE_2
 resource "azurerm_mssql_server_security_alert_policy" "sql_security_alert" {

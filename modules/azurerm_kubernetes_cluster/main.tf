@@ -17,10 +17,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name                         = "default"
     node_count                   = var.node_count
     vm_size                      = var.vm_size
-    max_pods                     = 110         # CKV_AZURE_168
-    only_critical_addons_enabled = true        # CKV_AZURE_232
-    os_disk_type                 = "Ephemeral" # CKV_AZURE_109 - Use ephemeral OS disks
-    os_disk_size_gb              = 100         # Required for ephemeral disks, must be <= cache size
+    max_pods                     = 110       # CKV_AZURE_168
+    only_critical_addons_enabled = true      # CKV_AZURE_232
+    os_disk_type                 = "Managed" # Use managed disks for smaller VMs (more reliable)
+    os_disk_size_gb              = 30        # Standard size for managed OS disks
     # host_encryption_enabled    = true        # CKV_AZURE_227 - Disabled: subscription doesn't support EncryptionAtHost
 
     # Note: disk_encryption_set_id is not directly supported in default_node_pool
