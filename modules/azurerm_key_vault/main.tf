@@ -6,14 +6,14 @@ resource "azurerm_key_vault" "key_vault" {
   resource_group_name         = var.rg_name
   enabled_for_disk_encryption = true
   tenant_id                   = data.azurerm_client_config.current.tenant_id
-  soft_delete_retention_days  = 90             # CKV_AZURE_42 - Increased from 7
-  purge_protection_enabled    = true           # CKV_AZURE_110
-  sku_name                    = "premium"      # Changed to premium for HSM support
+  soft_delete_retention_days  = 90        # CKV_AZURE_42 - Increased from 7
+  purge_protection_enabled    = true      # CKV_AZURE_110
+  sku_name                    = "premium" # Changed to premium for HSM support
   # Disable public access only if private endpoint is enabled (production)
   public_network_access_enabled = var.enable_private_endpoint ? false : true # CKV_AZURE_189
 
   network_acls {
-    default_action = "Deny"        # CKV_AZURE_109 - Always deny by default
+    default_action = "Deny" # CKV_AZURE_109 - Always deny by default
     bypass         = "AzureServices"
     ip_rules       = var.allowed_ips # CKV_AZURE_109 - Use firewall rules
   }

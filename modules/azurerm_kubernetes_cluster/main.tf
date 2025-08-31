@@ -18,10 +18,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name                         = "default"
     node_count                   = var.node_count
     vm_size                      = var.vm_size
-    max_pods                     = 110         # CKV_AZURE_168
-    only_critical_addons_enabled = true        # CKV_AZURE_232
-    os_disk_type                 = "Managed"   # Temporarily use managed disks for deployment
-    host_encryption_enabled      = true        # CKV_AZURE_227 - Enable host encryption
+    max_pods                     = 110       # CKV_AZURE_168
+    only_critical_addons_enabled = true      # CKV_AZURE_232
+    os_disk_type                 = "Managed" # Temporarily use managed disks for deployment
+    host_encryption_enabled      = true      # CKV_AZURE_227 - Enable host encryption
 
     # Note: disk_encryption_set_id is not directly supported in default_node_pool
     # This would require creating a separate azurerm_kubernetes_cluster_node_pool resource
