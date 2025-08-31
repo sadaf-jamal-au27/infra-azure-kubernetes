@@ -45,6 +45,12 @@ jobs:
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
 
+      - name: Clean Terraform Cache
+        run: |
+          echo "🧹 Cleaning terraform cache directories..."
+          find . -name ".terraform" -type d -exec rm -rf {} + 2>/dev/null || true
+          echo "✅ Cache cleaned"
+
       - name: Bootstrap Backend Storage (if needed)
         run: |
           echo "🚀 Checking if backend storage exists..."
