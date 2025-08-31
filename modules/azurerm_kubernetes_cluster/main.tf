@@ -3,9 +3,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location                = var.location
   resource_group_name     = var.rg_name
   dns_prefix              = var.dns_prefix
-  private_cluster_enabled = false      # Set to false for now due to complexity
-  local_account_disabled  = true       # CKV_AZURE_141
-  sku_tier                = "Standard" # CKV_AZURE_170
+  private_cluster_enabled = false       # Set to false for now due to complexity
+  local_account_disabled  = true        # CKV_AZURE_141
+  sku_tier                = "Standard"  # CKV_AZURE_170
+  node_os_upgrade_channel = "NodeImage" # CKV_AZURE_171
 
   api_server_access_profile {
     authorized_ip_ranges = ["0.0.0.0/32"] # CKV_AZURE_6 - Restrict access
@@ -17,6 +18,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     vm_size                      = var.vm_size
     max_pods                     = 110  # CKV_AZURE_168
     only_critical_addons_enabled = true # CKV_AZURE_232
+    # Enable ephemeral OS disks - CKV_AZURE_226
+    os_disk_type = "Ephemeral"
+    # Enable encryption at host - CKV_AZURE_227  
+    host_encryption_enabled = true
   }
 
   network_profile {

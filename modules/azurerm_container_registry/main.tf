@@ -10,6 +10,9 @@ resource "azurerm_container_registry" "acr" {
   trust_policy_enabled          = true  # CKV_AZURE_164
   quarantine_policy_enabled     = true  # CKV_AZURE_166
 
+  # Enable retention policy - CKV_AZURE_167
+  retention_policy_in_days = 7
+
   georeplications {
     location                = "eastus"
     zone_redundancy_enabled = true

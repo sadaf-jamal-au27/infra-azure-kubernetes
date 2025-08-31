@@ -10,7 +10,7 @@ resource "azurerm_key_vault" "key_vault" {
   purge_protection_enabled      = true  # CKV_AZURE_110
   public_network_access_enabled = false # CKV_AZURE_189
   tags                          = var.tags
-  sku_name                      = "standard"
+  sku_name                      = "premium" # Changed to premium for HSM support
 
   network_acls {
     default_action = "Deny" # CKV_AZURE_109
@@ -23,14 +23,41 @@ resource "azurerm_key_vault" "key_vault" {
 
     key_permissions = [
       "Get",
+      "Create",
+      "Delete",
+      "List",
+      "Restore",
+      "Recover",
+      "UnwrapKey",
+      "WrapKey",
+      "Purge",
+      "Encrypt",
+      "Decrypt",
+      "Sign",
+      "Verify"
     ]
 
     secret_permissions = [
       "Get",
+      "List",
+      "Set",
+      "Delete",
+      "Recover",
+      "Backup",
+      "Restore"
     ]
 
     storage_permissions = [
       "Get",
+      "List",
+      "Delete",
+      "Set",
+      "Update",
+      "RegenerateKey",
+      "SetSAS",
+      "ListSAS",
+      "GetSAS",
+      "DeleteSAS"
     ]
   }
 }

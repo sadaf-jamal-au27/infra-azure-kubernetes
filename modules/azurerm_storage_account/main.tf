@@ -47,8 +47,11 @@ resource "azurerm_user_assigned_identity" "storage_identity" {
 resource "azurerm_key_vault_key" "storage_key" {
   name         = "${var.sa_name}-key"
   key_vault_id = var.key_vault_id
-  key_type     = "RSA"
+  key_type     = "RSA-HSM" # CKV_AZURE_112 - Use HSM
   key_size     = 2048
+
+  # Add expiration date - CKV_AZURE_40
+  expiration_date = timeadd(timestamp(), "8760h") # 1 year from now
 
   key_opts = [
     "decrypt",

@@ -31,7 +31,7 @@ resource "azurerm_storage_account" "audit_storage" {
   resource_group_name             = var.rg_name
   location                        = var.location
   account_tier                    = "Standard"
-  account_replication_type        = "LRS"
+  account_replication_type        = "GRS" # CKV_AZURE_206 - Changed from LRS to GRS
   min_tls_version                 = "TLS1_2"
   public_network_access_enabled   = false
   allow_nested_items_to_be_public = false
@@ -75,8 +75,11 @@ resource "azurerm_user_assigned_identity" "audit_identity" {
 resource "azurerm_key_vault_key" "audit_key" {
   name         = "${var.sql_server_name}-audit-key"
   key_vault_id = var.key_vault_id
-  key_type     = "RSA"
+  key_type     = "RSA-HSM" # CKV_AZURE_112 - Use HSM
   key_size     = 2048
+
+  # Add expiration date - CKV_AZURE_40
+  expiration_date = timeadd(timestamp(), "8760h") # 1 year from now
 
   key_opts = [
     "decrypt",
