@@ -153,7 +153,14 @@ jobs:
         working-directory: environments/${{ matrix.environment }}
 
       - name: Terraform Plan
-        run: terraform plan -var-file=terraform.tfvars -out=tfplan
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Files in current directory:"
+          ls -la
+          echo "Using environment variables for Terraform configuration"
+          echo "TF_VAR_environment: $TF_VAR_environment"
+          echo "TF_VAR_sql_admin_password: [MASKED]"
+          terraform plan -out=tfplan
         working-directory: environments/${{ matrix.environment }}
         env:
           TF_VAR_environment: ${{ matrix.environment }}
@@ -209,7 +216,13 @@ jobs:
       - name: Terraform Apply
         id: deploy
         run: |
-          terraform apply -var-file=terraform.tfvars -auto-approve
+          echo "Current directory: $(pwd)"
+          echo "Files in current directory:"
+          ls -la
+          echo "Using environment variables for Terraform configuration"
+          echo "TF_VAR_environment: $TF_VAR_environment"
+          echo "TF_VAR_sql_admin_password: [MASKED]"
+          terraform apply -auto-approve
           echo "app_url=$(terraform output -raw app_url)" >> $GITHUB_OUTPUT
         working-directory: environments/dev
         env:
@@ -265,7 +278,13 @@ jobs:
       - name: Terraform Apply
         id: deploy
         run: |
-          terraform apply -var-file=terraform.tfvars -auto-approve
+          echo "Current directory: $(pwd)"
+          echo "Files in current directory:"
+          ls -la
+          echo "Using environment variables for Terraform configuration"
+          echo "TF_VAR_environment: $TF_VAR_environment"
+          echo "TF_VAR_sql_admin_password: [MASKED]"
+          terraform apply -auto-approve
           echo "app_url=$(terraform output -raw app_url)" >> $GITHUB_OUTPUT
         working-directory: environments/staging
         env:
@@ -320,7 +339,13 @@ jobs:
       - name: Terraform Apply
         id: deploy
         run: |
-          terraform apply -var-file=terraform.tfvars -auto-approve
+          echo "Current directory: $(pwd)"
+          echo "Files in current directory:"
+          ls -la
+          echo "Using environment variables for Terraform configuration"
+          echo "TF_VAR_environment: $TF_VAR_environment"
+          echo "TF_VAR_sql_admin_password: [MASKED]"
+          terraform apply -auto-approve
           echo "app_url=$(terraform output -raw app_url)" >> $GITHUB_OUTPUT
         working-directory: environments/prod
         env:
