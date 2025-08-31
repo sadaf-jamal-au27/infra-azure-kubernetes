@@ -14,4 +14,11 @@ variable "log_analytics_workspace_id" {
   type        = string
   default     = null
 }
+
+variable "disk_encryption_set_id" {
+  description = "The ID of the Disk Encryption Set to use for disk encryption"
+  type        = string
+  default     = null
+}
+
 variable "tags" {}

@@ -8,10 +8,9 @@ resource "azurerm_key_vault" "key_vault" {
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   soft_delete_retention_days  = 90   # CKV_AZURE_42 - Increased from 7
   purge_protection_enabled    = true # CKV_AZURE_110
+  sku_name                    = "premium" # Changed to premium for HSM support
   # Temporarily enable public access for development with IP restrictions
   public_network_access_enabled = true
-  tags                          = var.tags
-  sku_name                      = "premium" # Changed to premium for HSM support
 
   network_acls {
     default_action = "Deny" # CKV_AZURE_109
@@ -20,49 +19,71 @@ resource "azurerm_key_vault" "key_vault" {
     ip_rules = ["58.84.60.35/32"]
   }
 
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
+  tags = var.tags
+}
 
-    key_permissions = [
-      "Get",
-      "List",
-      "Create",
-      "Delete",
-      "Restore",
-      "Recover",
-      "UnwrapKey",
-      "WrapKey",
-      "Purge",
-      "Encrypt",
-      "Decrypt",
-      "Sign",
-      "Verify",
-      "GetRotationPolicy", # CKV2_AZURE_32
-      "SetRotationPolicy"  # CKV2_AZURE_32
-    ]
+# Access policy for current user/service principal
+resource "azurerm_key_vault_access_policy" "current_user" {
+  key_vault_id = azurerm_key_vault.key_vault.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = data.azurerm_client_config.current.object_id
 
-    secret_permissions = [
-      "Get",
-      "List",
-      "Set",
-      "Delete",
-      "Recover",
-      "Backup",
-      "Restore",
-    ]
+  key_permissions = [
+    "Get",
+    "List",
+    "Create",
+    "Delete",
+    "Restore",
+    "Recover",
+    "UnwrapKey",
+    "WrapKey",
+    "Purge",
+    "Encrypt",
+    "Decrypt",
+    "Sign",
+    "Verify",
+    "GetRotationPolicy", # CKV2_AZURE_32
+    "SetRotationPolicy"  # CKV2_AZURE_32
+  ]
 
-    storage_permissions = [
-      "Get",
-      "List",
-      "Delete",
-      "Set",
-      "Update",
-      "RegenerateKey",
-      "SetSAS",
-      "ListSAS",
-      "GetSAS",
-      "DeleteSAS"
-    ]
+  secret_permissions = [
+    "Get",
+    "List",
+    "Set",
+    "Delete",
+    "Recover",
+    "Backup",
+    "Restore",
+  ]
+
+  storage_permissions = [
+    "Get",
+    "List",
+    "Delete",
+    "Set",
+    "Update",
+    "RegenerateKey",
+    "SetSAS",
+    "ListSAS",
+    "GetSAS",
+    "DeleteSAS"
+  ]
+}
+
+# Private Endpoint for Key Vault - CKV2_AZURE_32
+resource "azurerm_private_endpoint" "key_vault_pe" {
+  count               = var.enable_private_endpoint ? 1 : 0
+  name                = "${var.kv_name}-pe"
+  location            = var.location
+  resource_group_name = var.rg_name
+  subnet_id           = var.private_endpoint_subnet_id
+
+  private_service_connection {
+    name                           = "${var.kv_name}-psc"
+    private_connection_resource_id = azurerm_key_vault.key_vault.id
+    subresource_names              = ["vault"]
+    is_manual_connection           = false
   }
+
+  tags = var.tags
 }

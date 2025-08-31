@@ -18,11 +18,11 @@ resource "azurerm_storage_account" "storage_account" {
     ip_rules                   = []
   }
 
-  # Customer Managed Key encryption - CKV2_AZURE_1 - Comment out for initial creation
-  # customer_managed_key {
-  #   key_vault_key_id          = azurerm_key_vault_key.storage_key.id
-  #   user_assigned_identity_id = azurerm_user_assigned_identity.storage_identity.id
-  # }
+  # Customer Managed Key encryption - CKV2_AZURE_1
+  customer_managed_key {
+    key_vault_key_id          = azurerm_key_vault_key.storage_key.id
+    user_assigned_identity_id = azurerm_user_assigned_identity.storage_identity.id
+  }
 
   # Identity for accessing Key Vault
   identity {
@@ -36,12 +36,19 @@ resource "azurerm_storage_account" "storage_account" {
     }
   }
 
+  # Enable queue service properties for CKV_AZURE_33
+  # Note: Storage Analytics logging for queue service must be enabled via Azure CLI/PowerShell/REST API
+  # as Terraform azurerm provider doesn't directly support this configuration yet
+
   sas_policy {
     expiration_period = "01.12:00:00" # CKV2_AZURE_41
   }
 
   tags = var.tags
 }
+
+# Note: CKV_AZURE_33 Queue service logging requires additional configuration 
+# that may need to be done via Azure Monitor or Log Analytics workspace
 
 # User Assigned Identity for storage account
 resource "azurerm_user_assigned_identity" "storage_identity" {
@@ -89,4 +96,68 @@ resource "azurerm_key_vault_access_policy" "storage_policy" {
   ]
 
   depends_on = [azurerm_user_assigned_identity.storage_identity]
+}
+
+# Enable Storage Analytics for Queue service using Azure CLI (for CKV_AZURE_33)
+# Note: This requires Azure CLI and appropriate permissions
+resource "null_resource" "enable_queue_analytics" {
+  count = var.enable_storage_analytics ? 1 : 0
+  
+  provisioner "local-exec" {
+    command = <<-EOT
+      # Temporarily enable shared access key for queue logging configuration
+      az storage account update \
+        --resource-group ${var.rg_name} \
+        --name ${azurerm_storage_account.storage_account.name} \
+        --allow-shared-key-access true
+
+      # Enable queue service logging using Storage Analytics
+      az storage logging update \
+        --account-name ${azurerm_storage_account.storage_account.name} \
+        --account-key $(az storage account keys list --resource-group ${var.rg_name} --account-name ${azurerm_storage_account.storage_account.name} --query '[0].value' -o tsv) \
+        --services q \
+        --log rwd \
+        --retention 10
+
+      # Also enable queue service metrics (part of Storage Analytics)
+      az storage metrics update \
+        --account-name ${azurerm_storage_account.storage_account.name} \
+        --account-key $(az storage account keys list --resource-group ${var.rg_name} --account-name ${azurerm_storage_account.storage_account.name} --query '[0].value' -o tsv) \
+        --services q \
+        --api true \
+        --hour true \
+        --minute false \
+        --retention 10
+
+      # Disable shared access key again for security
+      az storage account update \
+        --resource-group ${var.rg_name} \
+        --name ${azurerm_storage_account.storage_account.name} \
+        --allow-shared-key-access false
+    EOT
+  }
+
+  triggers = {
+    storage_account_id = azurerm_storage_account.storage_account.id
+  }
+
+  depends_on = [azurerm_storage_account.storage_account]
+}
+
+# Private Endpoint for Storage Account - CKV2_AZURE_33
+resource "azurerm_private_endpoint" "storage_pe" {
+  count               = var.enable_private_endpoint ? 1 : 0
+  name                = "${var.sa_name}-pe"
+  location            = var.location
+  resource_group_name = var.rg_name
+  subnet_id           = var.private_endpoint_subnet_id
+
+  private_service_connection {
+    name                           = "${var.sa_name}-psc"
+    private_connection_resource_id = azurerm_storage_account.storage_account.id
+    subresource_names              = ["blob"]
+    is_manual_connection           = false
+  }
+
+  tags = var.tags
 }

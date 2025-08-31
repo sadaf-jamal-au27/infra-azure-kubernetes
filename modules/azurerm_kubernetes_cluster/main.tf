@@ -22,6 +22,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     only_critical_addons_enabled = true        # CKV_AZURE_232
     os_disk_type                 = "Ephemeral" # CKV_AZURE_226 - Use ephemeral disks
     host_encryption_enabled      = true        # CKV_AZURE_227 - Enable host encryption
+
+    # Note: disk_encryption_set_id is not directly supported in default_node_pool
+    # This would require creating a separate azurerm_kubernetes_cluster_node_pool resource
   }
 
   network_profile {
@@ -51,6 +54,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
   key_vault_secrets_provider {
     secret_rotation_enabled = true # CKV_AZURE_172
   }
+
+  # Add disk encryption set for CKV_AZURE_117 (if provided)
+  disk_encryption_set_id = var.disk_encryption_set_id
 
   tags = var.tags
 }
