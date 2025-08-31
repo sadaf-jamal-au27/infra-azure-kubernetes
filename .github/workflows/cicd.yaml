@@ -153,10 +153,11 @@ jobs:
         working-directory: environments/${{ matrix.environment }}
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -var-file=terraform.tfvars -out=tfplan
         working-directory: environments/${{ matrix.environment }}
         env:
           TF_VAR_environment: ${{ matrix.environment }}
+          TF_VAR_sql_admin_password: ${{ matrix.environment == 'dev' && 'P@ssw01rd@123' || matrix.environment == 'staging' && 'P@ssw0rd@456' || 'P@ssw0rd@789' }}
 
       - name: Save Plan Artifact
         uses: actions/upload-artifact@v4
@@ -208,11 +209,12 @@ jobs:
       - name: Terraform Apply
         id: deploy
         run: |
-          terraform apply -auto-approve
+          terraform apply -var-file=terraform.tfvars -auto-approve
           echo "app_url=$(terraform output -raw app_url)" >> $GITHUB_OUTPUT
         working-directory: environments/dev
         env:
           TF_VAR_environment: dev
+          TF_VAR_sql_admin_password: "P@ssw01rd@123"
 
       - name: Run Infrastructure Tests
         run: |
@@ -263,11 +265,12 @@ jobs:
       - name: Terraform Apply
         id: deploy
         run: |
-          terraform apply -auto-approve
+          terraform apply -var-file=terraform.tfvars -auto-approve
           echo "app_url=$(terraform output -raw app_url)" >> $GITHUB_OUTPUT
         working-directory: environments/staging
         env:
           TF_VAR_environment: staging
+          TF_VAR_sql_admin_password: "P@ssw0rd@456"
 
       - name: Run Smoke Tests
         run: |
@@ -317,11 +320,12 @@ jobs:
       - name: Terraform Apply
         id: deploy
         run: |
-          terraform apply -auto-approve
+          terraform apply -var-file=terraform.tfvars -auto-approve
           echo "app_url=$(terraform output -raw app_url)" >> $GITHUB_OUTPUT
         working-directory: environments/prod
         env:
           TF_VAR_environment: production
+          TF_VAR_sql_admin_password: "P@ssw0rd@789"
 
       - name: Run Production Health Checks
         run: |
