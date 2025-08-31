@@ -3,8 +3,8 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location                = var.location
   resource_group_name     = var.rg_name
   dns_prefix              = var.dns_prefix
-  private_cluster_enabled = false # Set to false for now due to complexity
-  local_account_disabled  = true  # CKV_AZURE_141
+  private_cluster_enabled = false      # Set to false for now due to complexity
+  local_account_disabled  = true       # CKV_AZURE_141
   sku_tier                = "Standard" # CKV_AZURE_170
 
   api_server_access_profile {
@@ -15,7 +15,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name                         = "default"
     node_count                   = var.node_count
     vm_size                      = var.vm_size
-    max_pods                     = 110 # CKV_AZURE_168
+    max_pods                     = 110  # CKV_AZURE_168
     only_critical_addons_enabled = true # CKV_AZURE_232
   }
 

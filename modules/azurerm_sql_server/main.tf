@@ -1,11 +1,11 @@
 resource "azurerm_mssql_server" "sql_server" {
-  name                         = var.sql_server_name
-  resource_group_name          = var.rg_name
-  location                     = var.location
-  version                      = "12.0"
-  administrator_login          = var.admin_username
-  administrator_login_password = var.admin_password
-  minimum_tls_version          = "1.2"
+  name                          = var.sql_server_name
+  resource_group_name           = var.rg_name
+  location                      = var.location
+  version                       = "12.0"
+  administrator_login           = var.admin_username
+  administrator_login_password  = var.admin_password
+  minimum_tls_version           = "1.2"
   public_network_access_enabled = false # CKV_AZURE_113
 
   azuread_administrator {
@@ -32,7 +32,7 @@ resource "azurerm_storage_account" "audit_storage" {
   location                 = var.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
-  
+
   tags = var.tags
 }
 

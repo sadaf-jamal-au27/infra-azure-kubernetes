@@ -6,8 +6,8 @@ resource "azurerm_mssql_database" "sql_db" {
   max_size_gb    = var.max_size_gb
   sku_name       = "S0"
   enclave_type   = "VBS"
-  zone_redundant = true      # CKV_AZURE_229
-  ledger_enabled = true      # CKV_AZURE_224
+  zone_redundant = true # CKV_AZURE_229
+  ledger_enabled = true # CKV_AZURE_224
 
   tags = var.tags
 }
