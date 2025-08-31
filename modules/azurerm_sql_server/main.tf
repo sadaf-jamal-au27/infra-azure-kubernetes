@@ -44,7 +44,7 @@ resource "azurerm_storage_account" "audit_storage" {
   shared_access_key_enabled       = true # Enable for Terraform deployment
   default_to_oauth_authentication = true # Use Azure AD authentication
 
-  # Use Microsoft managed encryption for development (simpler deployment)
+  # Use Microsoft managed encryptions for development (simpler deployment)
   # Customer managed keys can be enabled later for production
 
   # Network rules - CKV_AZURE_35 (relaxed for deployment)
