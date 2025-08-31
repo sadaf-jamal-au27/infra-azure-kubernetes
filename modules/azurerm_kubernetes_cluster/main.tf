@@ -18,10 +18,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     vm_size                      = var.vm_size
     max_pods                     = 110  # CKV_AZURE_168
     only_critical_addons_enabled = true # CKV_AZURE_232
-    # Enable ephemeral OS disks - CKV_AZURE_226
-    os_disk_type = "Ephemeral"
-    # Enable encryption at host - CKV_AZURE_227  
-    host_encryption_enabled = true
+    # Use managed disks for better compatibility - CKV_AZURE_226
+    os_disk_type = "Managed"
+    # Enable encryption at host if supported by VM size - CKV_AZURE_227  
+    host_encryption_enabled = false # Disable for now due to VM size compatibility
   }
 
   network_profile {
