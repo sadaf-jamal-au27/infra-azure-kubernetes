@@ -67,14 +67,14 @@ jobs:
 
       - name: Terraform Init and Validate (Dev)
         run: |
-          cd environments/dev
-          terraform init
+          cd lib/environments/dev
+          terraform init -backend=false
           terraform validate
 
       - name: Terraform Init and Validate (Staging)  
         run: |
-          cd environments/staging
-          terraform init
+          cd lib/environments/staging
+          terraform init -backend=false
           terraform validate
 
       - name: Security Scan with Checkov
@@ -83,6 +83,7 @@ jobs:
           directory: .
           framework: terraform
           output_format: cli
+          config_file: .github/.checkov.yaml
           quiet: true
           soft_fail: true
 
@@ -93,6 +94,7 @@ jobs:
           framework: terraform
           output_format: sarif
           output_file_path: checkov-report.sarif
+          config_file: .github/.checkov.yaml
           quiet: true
           soft_fail: true
 
@@ -155,8 +157,8 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init
-        working-directory: environments/${{ matrix.environment }}
+        run: terraform init -backend=false
+        working-directory: lib/environments/${{ matrix.environment }}
 
       - name: Terraform Plan
         run: |
@@ -167,7 +169,7 @@ jobs:
           echo "TF_VAR_environment: $TF_VAR_environment"
           echo "TF_VAR_sql_admin_password: [MASKED]"
           terraform plan -out=tfplan
-        working-directory: environments/${{ matrix.environment }}
+        working-directory: lib/environments/${{ matrix.environment }}
         env:
           TF_VAR_environment: ${{ matrix.environment }}
           TF_VAR_sql_admin_password: ${{ matrix.environment == 'dev' && 'P@ssw01rd@123' || matrix.environment == 'staging' && 'P@ssw0rd@456' || 'P@ssw0rd@789' }}
@@ -176,7 +178,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: terraform-plan-${{ matrix.environment }}
-          path: environments/${{ matrix.environment }}/tfplan
+          path: lib/environments/${{ matrix.environment }}/tfplan
           retention-days: 5
 
   deploy-dev:
@@ -216,8 +218,8 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init
-        working-directory: environments/dev
+        run: terraform init -backend=false
+        working-directory: lib/environments/dev
         
       - name: Terraform Apply
         id: deploy
@@ -230,7 +232,7 @@ jobs:
           echo "TF_VAR_sql_admin_password: [MASKED]"
           terraform apply -auto-approve
           echo "app_url=$(terraform output -raw app_url)" >> $GITHUB_OUTPUT
-        working-directory: environments/dev
+        working-directory: lib/environments/dev
         env:
           TF_VAR_environment: dev
           TF_VAR_sql_admin_password: "P@ssw01rd@123"
@@ -278,8 +280,8 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init
-        working-directory: environments/staging
+        run: terraform init -backend=false
+        working-directory: lib/environments/staging
 
       - name: Terraform Apply
         id: deploy
@@ -292,7 +294,7 @@ jobs:
           echo "TF_VAR_sql_admin_password: [MASKED]"
           terraform apply -auto-approve
           echo "app_url=$(terraform output -raw app_url)" >> $GITHUB_OUTPUT
-        working-directory: environments/staging
+        working-directory: lib/environments/staging
         env:
           TF_VAR_environment: staging
           TF_VAR_sql_admin_password: "P@ssw0rd@456"
@@ -339,8 +341,8 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init
-        working-directory: environments/prod
+        run: terraform init -backend=false
+        working-directory: lib/environments/prod
 
       - name: Terraform Apply
         id: deploy
@@ -353,9 +355,9 @@ jobs:
           echo "TF_VAR_sql_admin_password: [MASKED]"
           terraform apply -auto-approve
           echo "app_url=$(terraform output -raw app_url)" >> $GITHUB_OUTPUT
-        working-directory: environments/prod
+        working-directory: lib/environments/prod
         env:
-          TF_VAR_environment: production
+          TF_VAR_environment: prod
           TF_VAR_sql_admin_password: "P@ssw0rd@789"
 
       - name: Run Production Health Checks

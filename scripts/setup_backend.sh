@@ -10,7 +10,7 @@ echo "=================================================="
 BACKEND_RG="rg-terraform-backend"
 BACKEND_SA="tfbackend$(date +%s | tail -c 6)"  # Unique suffix
 LOCATION="centralindia"
-SUBSCRIPTION_ID="a72674d0-171e-41fb-bed8-d50db63bc0b4"
+SUBSCRIPTION_ID="8cbf7ca1-02c5-4b17-aa60-0a669dc6f870"
 
 # Step 1: Create backend infrastructure
 echo "📦 Creating backend infrastructure..."
@@ -44,7 +44,7 @@ echo "   Container: tfstate"
 echo "📝 Updating provider.tf files with backend configuration..."
 
 # Dev environment
-cat > environments/dev/provider.tf << EOF
+cat > lib/environments/dev/provider.tf << EOF
 terraform {
   required_providers {
     azurerm = {
@@ -74,7 +74,7 @@ provider "azurerm" {
 EOF
 
 # Staging environment
-cat > environments/staging/provider.tf << EOF
+cat > lib/environments/staging/provider.tf << EOF
 terraform {
   required_providers {
     azurerm = {
@@ -104,7 +104,7 @@ provider "azurerm" {
 EOF
 
 # Production environment
-cat > environments/prod/provider.tf << EOF
+cat > lib/environments/prod/provider.tf << EOF
 terraform {
   required_providers {
     azurerm = {
@@ -138,7 +138,7 @@ echo "✅ Provider files updated with remote backend configuration"
 # Step 3: Initialize Terraform with remote backend
 echo "🔧 Initializing Terraform with remote backend..."
 
-cd environments/dev
+cd lib/environments/dev
 terraform init
 cd ../..
 
