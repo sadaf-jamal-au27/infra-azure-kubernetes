@@ -1,6 +1,6 @@
 # GitHub Actions Deprecation Fix
 
-## 🚨 Issue Resolved
+## 🚨 Issue Resolved:
 
 **Problem**: GitHub Actions workflow was failing due to deprecated `actions/upload-artifact@v3`
 
