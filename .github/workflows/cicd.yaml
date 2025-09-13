@@ -51,23 +51,30 @@ jobs:
           find . -name ".terraform" -type d -exec rm -rf {} + 2>/dev/null || true
           echo "✅ Cache cleaned"
 
-      - name: Bootstrap Backend Storage (if needed)
+      - name: Configure Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+        continue-on-error: true
+
+      - name: Set Terraform Azure Environment Variables
         run: |
-          echo "🚀 Checking if backend storage exists..."
-          # We'll use local state for CI/CD initially
-          # Backend can be configured manually later if needed
-          echo "ℹ️  Using local state for CI/CD pipeline"
+          echo "ARM_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)" >> $GITHUB_ENV
+          echo "ARM_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
+          echo "ARM_USE_CLI=false" >> $GITHUB_ENV
 
       - name: Terraform Init and Validate (Dev)
         run: |
           cd environments/dev
-          terraform init -backend=false
+          terraform init
           terraform validate
 
       - name: Terraform Init and Validate (Staging)  
         run: |
           cd environments/staging
-          terraform init -backend=false
+          terraform init
           terraform validate
 
       - name: Security Scan with Checkov
@@ -148,7 +155,7 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init -backend=false
+        run: terraform init
         working-directory: environments/${{ matrix.environment }}
 
       - name: Terraform Plan
@@ -209,9 +216,9 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init -backend=false
+        run: terraform init
         working-directory: environments/dev
-
+        
       - name: Terraform Apply
         id: deploy
         run: |
@@ -271,7 +278,7 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init -backend=false
+        run: terraform init
         working-directory: environments/staging
 
       - name: Terraform Apply
@@ -332,7 +339,7 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Init
-        run: terraform init -backend=false
+        run: terraform init
         working-directory: environments/prod
 
       - name: Terraform Apply
