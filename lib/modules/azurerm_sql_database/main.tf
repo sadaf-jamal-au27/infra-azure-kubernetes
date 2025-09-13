@@ -7,7 +7,7 @@ resource "azurerm_mssql_database" "sql_db" {
   sku_name       = "S0" # Standard tier - compatible with all subscriptions
   enclave_type   = "VBS"
   zone_redundant = false # Disabled for compatibility with all Azure subscriptions
-  ledger_enabled = true # CKV_AZURE_224
+  ledger_enabled = true  # CKV_AZURE_224
 
   tags = var.tags
 }
