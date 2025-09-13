@@ -13,7 +13,7 @@ terraform {
   # Remote backend for shared state management
   backend "azurerm" {
     resource_group_name  = "rg-terraform-backend"
-    storage_account_name = "tfbackend62320"
+    storage_account_name = "tfbackend82146"
     container_name       = "tfstate"
     key                  = "staging/terraform.tfstate"
   }
