@@ -59,17 +59,17 @@ module "key_vault" {
 }
 
 module "storage_account" {
-  depends_on               = [module.key_vault]
-  source                   = "../../modules/azurerm_storage_account"
-  sa_name                  = "sadev${local.unique_suffix}"
-  rg_name                  = "rg-dev-todoapp-${local.unique_suffix}"
-  location                 = "westus2" # Changed from eastus to westus2
-  key_vault_id             = module.key_vault.key_vault_id
-  tenant_id                = data.azurerm_client_config.current.tenant_id
-  key_vault_access_policy  = module.key_vault.access_policy
-  enable_storage_analytics = false # Disable for development to avoid Azure CLI dependency
+  depends_on                  = [module.key_vault]
+  source                      = "../../modules/azurerm_storage_account"
+  sa_name                     = "sadev${local.unique_suffix}"
+  rg_name                     = "rg-dev-todoapp-${local.unique_suffix}"
+  location                    = "westus2" # Changed from eastus to westus2
+  key_vault_id                = module.key_vault.key_vault_id
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  key_vault_access_policy     = module.key_vault.access_policy
+  enable_storage_analytics    = false # Disable for development to avoid Azure CLI dependency
   enable_customer_managed_key = false # Disable for free subscription compatibility
-  tags                     = local.common_tags
+  tags                        = local.common_tags
 }
 
 module "acr" {
