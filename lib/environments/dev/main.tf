@@ -18,7 +18,7 @@ data "azurerm_client_config" "current" {}
 module "rg" {
   source      = "../../modules/azurerm_resource_group"
   rg_name     = "rg-dev-todoapp-${local.unique_suffix}"
-  rg_location = "eastus"
+  rg_location = "westus2"  # Changed from eastus to westus2 for better free tier support
   rg_tags     = local.common_tags
 }
 
@@ -27,7 +27,7 @@ module "key_vault" {
   source     = "../../modules/azurerm_key_vault"
   kv_name    = "kv-dev-${local.unique_suffix}"
   rg_name    = "rg-dev-todoapp-${local.unique_suffix}"
-  location   = "eastus"
+  location   = "westus2"  # Changed from eastus to westus2
   tags       = local.common_tags
 
   # Allow specific IP ranges for CI/CD deployment
@@ -63,7 +63,7 @@ module "storage_account" {
   source                   = "../../modules/azurerm_storage_account"
   sa_name                  = "sadev${local.unique_suffix}"
   rg_name                  = "rg-dev-todoapp-${local.unique_suffix}"
-  location                 = "eastus" # Consistent with other resources
+  location                 = "westus2" # Changed from eastus to westus2
   key_vault_id             = module.key_vault.key_vault_id
   tenant_id                = data.azurerm_client_config.current.tenant_id
   key_vault_access_policy  = module.key_vault.access_policy
@@ -76,7 +76,7 @@ module "acr" {
   source     = "../../modules/azurerm_container_registry"
   acr_name   = "acrdev${local.unique_suffix}"
   rg_name    = "rg-dev-todoapp-${local.unique_suffix}"
-  location   = "eastus"
+  location   = "westus2"  # Changed from eastus to westus2
   tags       = local.common_tags
 }
 
@@ -85,7 +85,7 @@ module "sql_server" {
   source                  = "../../modules/azurerm_sql_server"
   sql_server_name         = "sql-dev-${local.unique_suffix}"
   rg_name                 = "rg-dev-todoapp-${local.unique_suffix}"
-  location                = "eastus" # Consistent with other resources
+  location                = "westus2" # Changed from eastus to westus2
   admin_username          = "devopsadmin"
   admin_password          = var.sql_admin_password # Use variable instead of hardcoded password
   key_vault_id            = module.key_vault.key_vault_id
@@ -107,7 +107,7 @@ module "aks" {
   depends_on = [module.rg]
   source     = "../../modules/azurerm_kubernetes_cluster"
   aks_name   = "aks-dev-${local.unique_suffix}"
-  location   = "eastus"
+  location   = "westus2"  # Changed from eastus to westus2
   rg_name    = "rg-dev-todoapp-${local.unique_suffix}"
   dns_prefix = "aks-dev-${local.unique_suffix}"
   tags       = local.common_tags
