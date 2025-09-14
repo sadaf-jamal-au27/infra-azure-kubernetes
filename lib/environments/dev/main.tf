@@ -18,7 +18,7 @@ data "azurerm_client_config" "current" {}
 module "rg" {
   source      = "../../modules/azurerm_resource_group"
   rg_name     = "rg-dev-todoapp-${local.unique_suffix}"
-  rg_location = "westus2"  # Changed from eastus to westus2 for better free tier support
+  rg_location = "westus2" # Changed from eastus to westus2 for better free tier support
   rg_tags     = local.common_tags
 }
 
@@ -27,7 +27,7 @@ module "key_vault" {
   source     = "../../modules/azurerm_key_vault"
   kv_name    = "kv-dev-${local.unique_suffix}"
   rg_name    = "rg-dev-todoapp-${local.unique_suffix}"
-  location   = "westus2"  # Changed from eastus to westus2
+  location   = "westus2" # Changed from eastus to westus2
   tags       = local.common_tags
 
   # Allow specific IP ranges for CI/CD deployment
@@ -76,7 +76,7 @@ module "acr" {
   source     = "../../modules/azurerm_container_registry"
   acr_name   = "acrdev${local.unique_suffix}"
   rg_name    = "rg-dev-todoapp-${local.unique_suffix}"
-  location   = "westus2"  # Changed from eastus to westus2
+  location   = "westus2" # Changed from eastus to westus2
   tags       = local.common_tags
 }
 
@@ -107,7 +107,7 @@ module "aks" {
   depends_on = [module.rg]
   source     = "../../modules/azurerm_kubernetes_cluster"
   aks_name   = "aks-dev-${local.unique_suffix}"
-  location   = "westus2"  # Changed from eastus to westus2
+  location   = "westus2" # Changed from eastus to westus2
   rg_name    = "rg-dev-todoapp-${local.unique_suffix}"
   dns_prefix = "aks-dev-${local.unique_suffix}"
   tags       = local.common_tags

@@ -13,10 +13,11 @@ resource "azurerm_container_registry" "acr" {
   # Enable retention policy - CKV_AZURE_167
   retention_policy_in_days = 7
 
-  georeplications {
-    location                = "westus2"
-    zone_redundancy_enabled = true
-  }
+  # Georeplication disabled for dev environment to avoid conflicts
+  # georeplications {
+  #   location                = "westus2"
+  #   zone_redundancy_enabled = true
+  # }
 
   tags = var.tags
 }
