@@ -13,11 +13,10 @@ resource "azurerm_mssql_server" "sql_server" {
     type = "SystemAssigned"
   }
 
-  # Azure AD administrator - commented out for free subscription compatibility
-  # azuread_administrator {
-  #   login_username = "azuread-admin"
-  #   object_id      = data.azurerm_client_config.current.object_id
-  # }
+  azuread_administrator {
+    login_username = "azuread-admin"
+    object_id      = data.azurerm_client_config.current.object_id
+  }
 
   tags = var.tags
 }
@@ -38,7 +37,7 @@ resource "azurerm_storage_account" "audit_storage" {
   resource_group_name             = var.rg_name
   location                        = var.location
   account_tier                    = "Standard"
-  account_replication_type        = "LRS" # Use LRS for free subscription (GRS not available)
+  account_replication_type        = "GRS" # Required by CKV_AZURE_206
   min_tls_version                 = "TLS1_2"
   public_network_access_enabled   = true # Enable for deployment
   allow_nested_items_to_be_public = false
