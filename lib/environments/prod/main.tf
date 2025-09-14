@@ -49,7 +49,10 @@ module "key_vault" {
     "20.106.0.0/16", # GitHub Actions - Additional range
     "20.112.0.0/16", # GitHub Actions - Additional range
     "20.120.0.0/16", # GitHub Actions - Additional range
-    "20.150.0.0/16"  # GitHub Actions - Additional range
+    "20.150.0.0/16", # GitHub Actions - Additional range
+    "64.236.0.0/16", # GitHub Actions - Additional range (covers 64.236.200.101)
+    "64.237.0.0/16", # GitHub Actions - Additional range
+    "64.238.0.0/16"  # GitHub Actions - Additional range
     # Note: Remove GitHub Actions IPs post-deployment for maximum security
   ]
 }
