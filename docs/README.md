@@ -13,6 +13,34 @@ Complete guide for debugging and troubleshooting infrastructure issues, includin
 - Performance optimization
 - Recovery procedures
 
+### 🔐 [Azure Service Connection & Service Principal Guide](./AZURE_SERVICE_CONNECTION_GUIDE.md)
+Comprehensive guide explaining how Azure authentication works in CI/CD pipelines:
+- Service Principal vs Service Connection
+- Authentication flow and mechanisms
+- Step-by-step setup instructions
+- Security best practices
+- Troubleshooting common issues
+- Current configuration status
+- **✅ OIDC Implementation Status**
+
+### 🚀 [OIDC Implementation Guide](./OIDC_IMPLEMENTATION_GUIDE.md)
+Complete guide for implementing OpenID Connect authentication:
+- OIDC benefits and security improvements
+- Step-by-step Azure AD setup
+- Federated credentials configuration
+- Pipeline integration details
+- Migration from client secrets
+- Testing and validation procedures
+
+### 🗄️ [Terraform Remote Backend Guide](./TERRAFORM_REMOTE_BACKEND_GUIDE.md)
+Comprehensive guide for implementing Terraform remote backend:
+- Remote backend benefits and architecture
+- Azure Storage backend setup
+- State locking and team collaboration
+- Migration from local to remote backend
+- Pipeline integration and best practices
+- **✅ Successfully Implemented**
+
 ## 🎯 Quick Start
 
 1. **For Developers**: Start with the [Debugging Guide](./DEBUGGING_TROUBLESHOOTING.md) for common issues

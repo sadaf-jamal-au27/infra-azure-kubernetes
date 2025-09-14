@@ -49,24 +49,26 @@ jobs:
           find . -name ".terraform" -type d -exec rm -rf {} + 2>/dev/null || true
           echo "✅ Cache cleaned"
 
-      - name: Configure Azure CLI
+      - name: Azure Login with OIDC
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          oidc: true
         continue-on-error: true
 
       - name: Set Terraform Azure Environment Variables
         run: |
-          echo "ARM_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)" >> $GITHUB_ENV
-          echo "ARM_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)" >> $GITHUB_ENV
-          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
-          echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
-          echo "ARM_USE_CLI=false" >> $GITHUB_ENV
+          echo "ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+          echo "ARM_USE_CLI=true" >> $GITHUB_ENV
 
       - name: Infrastructure Configuration Validation
         run: |
           cd lib/environments/dev
-          terraform init -backend=false
+          terraform init
           terraform validate
 
       - name: Security Compliance Assessment
@@ -126,19 +128,21 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Configure Azure CLI
+      - name: Azure Login with OIDC
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          oidc: true
         continue-on-error: true
 
       - name: Set Terraform Azure Environment Variables
         run: |
-          echo "ARM_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)" >> $GITHUB_ENV
-          echo "ARM_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)" >> $GITHUB_ENV
-          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
-          echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
-          echo "ARM_USE_CLI=false" >> $GITHUB_ENV
+          echo "ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+          echo "ARM_USE_CLI=true" >> $GITHUB_ENV
 
       - name: Verify Azure Authentication
         run: |
@@ -146,7 +150,7 @@ jobs:
         continue-on-error: true
 
       - name: Infrastructure Initialization
-        run: terraform init -backend=false
+        run: terraform init
         working-directory: lib/environments/dev
 
       - name: Infrastructure Change Analysis
@@ -203,19 +207,21 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Configure Azure CLI
+      - name: Azure Login with OIDC
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          oidc: true
         continue-on-error: true
 
       - name: Set Terraform Azure Environment Variables
         run: |
-          echo "ARM_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)" >> $GITHUB_ENV
-          echo "ARM_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)" >> $GITHUB_ENV
-          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
-          echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
-          echo "ARM_USE_CLI=false" >> $GITHUB_ENV
+          echo "ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+          echo "ARM_USE_CLI=true" >> $GITHUB_ENV
 
       - name: Verify Azure Authentication
         run: |
@@ -223,7 +229,7 @@ jobs:
         continue-on-error: true
 
       - name: Infrastructure Initialization
-        run: terraform init -backend=false
+        run: terraform init
         working-directory: lib/environments/dev
 
       - name: Infrastructure Provisioning
@@ -298,19 +304,21 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Configure Azure CLI
+      - name: Azure Login with OIDC
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          oidc: true
         continue-on-error: true
 
       - name: Set Terraform Azure Environment Variables
         run: |
-          echo "ARM_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)" >> $GITHUB_ENV
-          echo "ARM_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)" >> $GITHUB_ENV
-          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
-          echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
-          echo "ARM_USE_CLI=false" >> $GITHUB_ENV
+          echo "ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+          echo "ARM_USE_CLI=true" >> $GITHUB_ENV
 
       - name: Cleanup Temporary Resources
         run: |

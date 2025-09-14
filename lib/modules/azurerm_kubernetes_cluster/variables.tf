@@ -7,7 +7,7 @@ variable "node_count" {
 }
 variable "vm_size" {
   description = "VM size for AKS nodes"
-  default     = "Standard_B1s" # Smaller VM size for free subscription (1 vCPU, 1GB RAM)
+  default     = "Standard_B2als_v2" # Meets minimum requirements (2 vCPUs, 4GB RAM)
 }
 variable "log_analytics_workspace_id" {
   description = "Log Analytics Workspace ID for monitoring"

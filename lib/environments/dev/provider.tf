@@ -10,13 +10,13 @@ terraform {
     }
   }
 
-  # Remote backend for shared state management (temporarily disabled)
-  # backend "azurerm" {
-  #   resource_group_name  = "rg-terraform-backend"
-  #   storage_account_name = "tfbackend82146"
-  #   container_name       = "tfstate"
-  #   key                  = "dev/terraform.tfstate"
-  # }
+  # Remote backend for shared state management
+  backend "azurerm" {
+    resource_group_name  = "rg-dev-todoapp-9e8e53bc"
+    storage_account_name = "tfstate1757846024"
+    container_name       = "terraform-state"
+    key                  = "dev/terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
