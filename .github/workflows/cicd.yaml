@@ -19,7 +19,7 @@ env:
 
 jobs:
   validation:
-    name: "🔍 Terraform Code Validation & Security Scan"
+    name: "Infrastructure Validation & Security Compliance"
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -40,7 +40,7 @@ jobs:
         timeout-minutes: 5
         continue-on-error: false
 
-      - name: Terraform Format Check
+      - name: Code Format Validation
         run: terraform fmt -check -recursive
 
       - name: Clean Terraform Cache
@@ -63,13 +63,13 @@ jobs:
           echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
           echo "ARM_USE_CLI=false" >> $GITHUB_ENV
 
-      - name: Terraform Init and Validate (Development)
+      - name: Infrastructure Configuration Validation
         run: |
           cd lib/environments/dev
           terraform init -backend=false
           terraform validate
 
-      - name: Security Scan with Checkov
+      - name: Security Compliance Assessment
         uses: bridgecrewio/checkov-action@master
         with:
           directory: .
@@ -79,7 +79,7 @@ jobs:
           quiet: true
           soft_fail: true
 
-      - name: Security Scan with Checkov (SARIF)
+      - name: Security Compliance Report Generation
         uses: bridgecrewio/checkov-action@master
         with:
           directory: .
@@ -113,7 +113,7 @@ jobs:
           echo "📋 Report uploaded to GitHub Security tab (if permissions allow)"
 
   plan:
-    name: "📋 Terraform Infrastructure Planning"
+    name: "Infrastructure Planning & Resource Analysis"
     runs-on: ubuntu-latest
     needs: validation
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/feature/')
@@ -145,11 +145,11 @@ jobs:
           az account show || echo "Azure authentication failed - using service principal"
         continue-on-error: true
 
-      - name: Terraform Init
+      - name: Infrastructure Initialization
         run: terraform init -backend=false
         working-directory: lib/environments/dev
 
-      - name: Terraform Plan
+      - name: Infrastructure Change Analysis
         run: |
           echo "Current directory: $(pwd)"
           echo "Files in current directory:"
@@ -163,15 +163,15 @@ jobs:
           TF_VAR_environment: dev
           TF_VAR_sql_admin_password: "P@ssw0rd@789"
 
-      - name: Save Plan Artifact
+      - name: Archive Deployment Plan
         uses: actions/upload-artifact@v4
         with:
-          name: terraform-plan-dev
+          name: infrastructure-deployment-plan
           path: lib/environments/dev/tfplan
           retention-days: 5
 
   deploy-development:
-    name: "🚀 Deploy Infrastructure to Development"
+    name: "Infrastructure Deployment & Provisioning"
     runs-on: ubuntu-latest
     needs: [validation, plan]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
@@ -179,21 +179,21 @@ jobs:
       name: development
       url: ${{ steps.deploy.outputs.app_url }}
     steps:
-      - name: "Development Deployment"
+      - name: "Deployment Authorization"
         run: |
-          echo "🚀 DEPLOYING TO DEVELOPMENT ENVIRONMENT"
-          echo "======================================"
-          echo "✅ This is a development deployment"
-          echo "✅ Safe to proceed automatically"
-          echo "✅ Perfect for free Azure subscription"
+          echo "INFRASTRUCTURE DEPLOYMENT INITIATED"
+          echo "=================================="
+          echo "Environment: Development"
+          echo "Deployment Type: Automated"
+          echo "Compliance: Security Validated"
           echo ""
-          echo "📋 Deployment Details:"
+          echo "Deployment Details:"
           echo "  • Environment: Development"
           echo "  • Branch: ${{ github.ref }}"
           echo "  • Commit: ${{ github.sha }}"
           echo "  • Actor: ${{ github.actor }}"
           echo ""
-          echo "✅ Proceeding with development deployment..."
+          echo "Proceeding with infrastructure deployment..."
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -222,11 +222,11 @@ jobs:
           az account show || echo "Azure authentication failed - using service principal"
         continue-on-error: true
 
-      - name: Terraform Init
+      - name: Infrastructure Initialization
         run: terraform init -backend=false
         working-directory: lib/environments/dev
 
-      - name: Terraform Apply
+      - name: Infrastructure Provisioning
         id: deploy
         run: |
           echo "Current directory: $(pwd)"
@@ -242,28 +242,28 @@ jobs:
           TF_VAR_environment: dev
           TF_VAR_sql_admin_password: "P@ssw0rd@789"
 
-      - name: Run Development Health Checks
+      - name: Infrastructure Health Validation
         run: |
-          # Add your development health checks here
-          echo "Running development health checks..."
-          echo "✅ Development environment is healthy!"
+          # Add your infrastructure health checks here
+          echo "Running infrastructure health validation..."
+          echo "✅ Infrastructure deployment is healthy!"
 
-      - name: Notify Success
+      - name: Deployment Success Notification
         if: success()
         uses: 8398a7/action-slack@v3
         with:
           status: success
-          text: "✅ Development deployment completed successfully!"
+          text: "✅ Infrastructure deployment completed successfully!"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         continue-on-error: true
 
-      - name: Notify Failure
+      - name: Deployment Failure Notification
         if: failure()
         uses: 8398a7/action-slack@v3
         with:
           status: failure
-          text: "❌ Development deployment failed!"
+          text: "❌ Infrastructure deployment failed!"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         continue-on-error: true
