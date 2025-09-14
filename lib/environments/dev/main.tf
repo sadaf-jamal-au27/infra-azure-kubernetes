@@ -68,6 +68,7 @@ module "storage_account" {
   tenant_id                = data.azurerm_client_config.current.tenant_id
   key_vault_access_policy  = module.key_vault.access_policy
   enable_storage_analytics = false # Disable for development to avoid Azure CLI dependency
+  enable_customer_managed_key = false # Disable for free subscription compatibility
   tags                     = local.common_tags
 }
 

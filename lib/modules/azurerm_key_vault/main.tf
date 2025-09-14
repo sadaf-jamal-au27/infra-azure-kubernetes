@@ -69,6 +69,54 @@ resource "azurerm_key_vault_access_policy" "current_user" {
   ]
 }
 
+# Access policy for service principal (used in CI/CD pipeline)
+resource "azurerm_key_vault_access_policy" "service_principal" {
+  key_vault_id = azurerm_key_vault.key_vault.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = "5c44e5ba-ac35-4f81-a473-e4c37c732dce" # Service principal object ID from error
+
+  key_permissions = [
+    "Get",
+    "List",
+    "Create",
+    "Delete",
+    "Restore",
+    "Recover",
+    "UnwrapKey",
+    "WrapKey",
+    "Purge",
+    "Encrypt",
+    "Decrypt",
+    "Sign",
+    "Verify",
+    "GetRotationPolicy",
+    "SetRotationPolicy"
+  ]
+
+  secret_permissions = [
+    "Get",
+    "List",
+    "Set",
+    "Delete",
+    "Recover",
+    "Backup",
+    "Restore",
+  ]
+
+  storage_permissions = [
+    "Get",
+    "List",
+    "Delete",
+    "Set",
+    "Update",
+    "RegenerateKey",
+    "SetSAS",
+    "ListSAS",
+    "GetSAS",
+    "DeleteSAS"
+  ]
+}
+
 # Private Endpoint for Key Vault - CKV2_AZURE_32
 resource "azurerm_private_endpoint" "key_vault_pe" {
   count               = var.enable_private_endpoint ? 1 : 0

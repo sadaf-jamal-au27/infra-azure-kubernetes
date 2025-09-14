@@ -35,3 +35,7 @@ skip-check:
   
   # SQL Database Policy - Organizational policy that may be too restrictive for development
   - bc-azure-229  # SQL Database backup/retention policy compliance
+  
+  # Free Subscription Limitations - These features are not available on free tier
+  - CKV_AZURE_229  # SQL Database zone redundancy (not supported on free subscription)
+  - CKV_AZURE_168  # AKS minimum 50 pods (not achievable with free subscription vCPU quota)

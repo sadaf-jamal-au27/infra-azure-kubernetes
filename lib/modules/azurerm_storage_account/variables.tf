@@ -36,3 +36,9 @@ variable "enable_storage_analytics" {
   type        = bool
   default     = false
 }
+
+variable "enable_customer_managed_key" {
+  description = "Enable customer managed key encryption (disable for free subscription compatibility)"
+  type        = bool
+  default     = false
+}

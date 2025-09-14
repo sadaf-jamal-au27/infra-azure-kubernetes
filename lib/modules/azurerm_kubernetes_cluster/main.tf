@@ -17,7 +17,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name                         = "default"
     node_count                   = var.node_count
     vm_size                      = var.vm_size
-    max_pods                     = 30        # Reduced for smaller VM size (Standard_B1s)
+    max_pods                     = 30        # Reduced for smaller VM size (Standard_L2s_v4)
     only_critical_addons_enabled = true      # CKV_AZURE_232
     os_disk_type                 = "Managed" # Use managed disks for smaller VMs (more reliable)
     os_disk_size_gb              = 30        # Standard size for managed OS disks

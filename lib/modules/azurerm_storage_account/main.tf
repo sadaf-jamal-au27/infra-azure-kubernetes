@@ -18,10 +18,13 @@ resource "azurerm_storage_account" "storage_account" {
     ip_rules                   = []
   }
 
-  # Customer Managed Key encryption - CKV2_AZURE_1
-  customer_managed_key {
-    key_vault_key_id          = azurerm_key_vault_key.storage_key.id
-    user_assigned_identity_id = azurerm_user_assigned_identity.storage_identity.id
+  # Customer Managed Key encryption - CKV2_AZURE_1 (conditional)
+  dynamic "customer_managed_key" {
+    for_each = var.enable_customer_managed_key ? [1] : []
+    content {
+      key_vault_key_id          = azurerm_key_vault_key.storage_key[0].id
+      user_assigned_identity_id = azurerm_user_assigned_identity.storage_identity.id
+    }
   }
 
   # Identity for accessing Key Vault
