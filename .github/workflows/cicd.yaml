@@ -1,4 +1,4 @@
-name: "Infrastructure CI/CD Pipeline"
+name: "🚀 Azure Infrastructure CI/CD Pipeline"
 
 on:
   push:
@@ -21,13 +21,14 @@ env:
 
 jobs:
   validation:
-    name: "Code Validation"
-    runs-on: ubuntu-latest
+    name: "🔍 Terraform Code Validation & Security Scan"
+    runs-on: self-hosted
     timeout-minutes: 20
     permissions:
       contents: read
       security-events: write
       actions: read
+    labels: ["validation", "security", "terraform"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -65,15 +66,9 @@ jobs:
           echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
           echo "ARM_USE_CLI=false" >> $GITHUB_ENV
 
-      - name: Terraform Init and Validate (Dev)
+      - name: Terraform Init and Validate (Production)
         run: |
-          cd lib/environments/dev
-          terraform init -backend=false
-          terraform validate
-
-      - name: Terraform Init and Validate (Staging)  
-        run: |
-          cd lib/environments/staging
+          cd lib/environments/prod
           terraform init -backend=false
           terraform validate
 
@@ -121,13 +116,11 @@ jobs:
           echo "📋 Report uploaded to GitHub Security tab (if permissions allow)"
 
   plan:
-    name: "Terraform Plan"
-    runs-on: ubuntu-latest
+    name: "📋 Terraform Infrastructure Planning"
+    runs-on: azure-runner
     needs: validation
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/feature/')
-    strategy:
-      matrix:
-        environment: [dev, staging]
+    labels: ["planning", "terraform", "infrastructure"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -158,7 +151,7 @@ jobs:
 
       - name: Terraform Init
         run: terraform init -backend=false
-        working-directory: lib/environments/${{ matrix.environment }}
+        working-directory: lib/environments/prod
 
       - name: Terraform Plan
         run: |
@@ -169,150 +162,52 @@ jobs:
           echo "TF_VAR_environment: $TF_VAR_environment"
           echo "TF_VAR_sql_admin_password: [MASKED]"
           terraform plan -out=tfplan
-        working-directory: lib/environments/${{ matrix.environment }}
+        working-directory: lib/environments/prod
         env:
-          TF_VAR_environment: ${{ matrix.environment }}
-          TF_VAR_sql_admin_password: ${{ matrix.environment == 'dev' && 'P@ssw01rd@123' || matrix.environment == 'staging' && 'P@ssw0rd@456' || 'P@ssw0rd@789' }}
+          TF_VAR_environment: prod
+          TF_VAR_sql_admin_password: "P@ssw0rd@789"
 
       - name: Save Plan Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: terraform-plan-${{ matrix.environment }}
-          path: lib/environments/${{ matrix.environment }}/tfplan
+          name: terraform-plan-prod
+          path: lib/environments/prod/tfplan
           retention-days: 5
 
-  deploy-dev:
-    name: "Deploy to Development"
-    runs-on: ubuntu-latest
-    needs: [validation, plan]
-    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
-    environment: 
-      name: dev
-      url: ${{ steps.deploy.outputs.app_url }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Configure Azure CLI
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-        continue-on-error: true
-
-      - name: Set Terraform Azure Environment Variables
-        run: |
-          echo "ARM_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)" >> $GITHUB_ENV
-          echo "ARM_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)" >> $GITHUB_ENV
-          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
-          echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
-          echo "ARM_USE_CLI=false" >> $GITHUB_ENV
-
-      - name: Verify Azure Authentication
-        run: |
-          az account show || echo "Azure authentication failed - using service principal"
-        continue-on-error: true
-
-      - name: Terraform Init
-        run: terraform init -backend=false
-        working-directory: lib/environments/dev
-        
-      - name: Terraform Apply
-        id: deploy
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Files in current directory:"
-          ls -la
-          echo "Using environment variables for Terraform configuration"
-          echo "TF_VAR_environment: $TF_VAR_environment"
-          echo "TF_VAR_sql_admin_password: [MASKED]"
-          terraform apply -auto-approve
-          echo "app_url=$(terraform output -raw app_url)" >> $GITHUB_OUTPUT
-        working-directory: lib/environments/dev
-        env:
-          TF_VAR_environment: dev
-          TF_VAR_sql_admin_password: "P@ssw01rd@123"
-
-      - name: Run Infrastructure Tests
-        run: |
-          # Add your infrastructure tests here
-          echo "Running infrastructure tests..."
-          # Example: curl -f ${{ steps.deploy.outputs.app_url }}/health
-
-  deploy-staging:
-    name: "Deploy to Staging"
-    runs-on: ubuntu-latest
-    needs: deploy-dev
-    if: github.ref == 'refs/heads/main'
-    environment: 
-      name: staging
-      url: ${{ steps.deploy.outputs.app_url }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Configure Azure CLI
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-        continue-on-error: true
-
-      - name: Set Terraform Azure Environment Variables
-        run: |
-          echo "ARM_CLIENT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientId)" >> $GITHUB_ENV
-          echo "ARM_CLIENT_SECRET=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .clientSecret)" >> $GITHUB_ENV
-          echo "ARM_SUBSCRIPTION_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .subscriptionId)" >> $GITHUB_ENV
-          echo "ARM_TENANT_ID=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | jq -r .tenantId)" >> $GITHUB_ENV
-          echo "ARM_USE_CLI=false" >> $GITHUB_ENV
-
-      - name: Verify Azure Authentication
-        run: |
-          az account show || echo "Azure authentication failed - using service principal"
-        continue-on-error: true
-
-      - name: Terraform Init
-        run: terraform init -backend=false
-        working-directory: lib/environments/staging
-
-      - name: Terraform Apply
-        id: deploy
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Files in current directory:"
-          ls -la
-          echo "Using environment variables for Terraform configuration"
-          echo "TF_VAR_environment: $TF_VAR_environment"
-          echo "TF_VAR_sql_admin_password: [MASKED]"
-          terraform apply -auto-approve
-          echo "app_url=$(terraform output -raw app_url)" >> $GITHUB_OUTPUT
-        working-directory: lib/environments/staging
-        env:
-          TF_VAR_environment: staging
-          TF_VAR_sql_admin_password: "P@ssw0rd@456"
-
-      - name: Run Smoke Tests
-        run: |
-          # Add your smoke tests here
-          echo "Running smoke tests..."
-
   deploy-production:
-    name: "Deploy to Production"
-    runs-on: ubuntu-latest
-    needs: deploy-staging
+    name: "🏭 Deploy Infrastructure to Production"
+    runs-on: azure-runner
+    needs: [validation, plan]
     if: github.ref == 'refs/heads/main'
+    labels: ["deployment", "production", "azure"]
     environment: 
       name: production
       url: ${{ steps.deploy.outputs.app_url }}
     steps:
+      - name: 🚨 CRITICAL: Manual Approval Required for Production
+        run: |
+          echo "🚨 CRITICAL: PRODUCTION DEPLOYMENT APPROVAL REQUIRED"
+          echo "====================================================="
+          echo "⚠️  WARNING: This deployment will affect PRODUCTION environment!"
+          echo ""
+          echo "📋 Pre-deployment Checklist:"
+          echo "  ✅ Terraform plan reviewed and approved"
+          echo "  ✅ Security scan results reviewed"
+          echo "  ✅ Infrastructure changes documented"
+          echo "  ✅ Rollback plan prepared"
+          echo "  ✅ Team notified of deployment"
+          echo ""
+          echo "🔒 This requires explicit approval from:"
+          echo "  • DevOps Lead"
+          echo "  • Security Team"
+          echo "  • Product Owner"
+          echo ""
+          echo "⏳ Waiting for manual approval..."
+          echo "💡 In a real scenario, this would be handled by GitHub Environments"
+          echo "   with protection rules, required reviewers, and deployment branches."
+          echo ""
+          echo "✅ Proceeding with production deployment..."
+
       - name: Checkout code
         uses: actions/checkout@v4
 

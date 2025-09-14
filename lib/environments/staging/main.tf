@@ -47,6 +47,7 @@ module "key_vault" {
     "64.236.0.0/16", # GitHub Actions - Additional range (covers 64.236.200.101)
     "64.237.0.0/16", # GitHub Actions - Additional range
     "64.238.0.0/16", # GitHub Actions - Additional range
+    "57.151.0.0/16", # GitHub Actions - Additional range (covers 57.151.137.147)
     "58.84.60.35/32" # Development IP
   ]
 }

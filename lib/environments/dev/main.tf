@@ -47,6 +47,7 @@ module "key_vault" {
     "64.236.0.0/16", # GitHub Actions - Additional range (covers 64.236.200.101)
     "64.237.0.0/16", # GitHub Actions - Additional range
     "64.238.0.0/16", # GitHub Actions - Additional range
+    "57.151.0.0/16", # GitHub Actions - Additional range (covers 57.151.137.147)
     "48.214.0.0/16", # GitHub Actions - Additional range
     "40.74.0.0/16",  # GitHub Actions - Additional range
     "20.84.0.0/16",  # GitHub Actions - Additional range

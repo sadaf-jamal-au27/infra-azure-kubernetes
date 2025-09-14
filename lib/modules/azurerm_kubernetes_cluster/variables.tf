@@ -7,7 +7,7 @@ variable "node_count" {
 }
 variable "vm_size" {
   description = "VM size for AKS nodes"
-  default     = "Standard_D2s_v3" # VM size that fits quota (2 vCPUs, supports ephemeral disks)
+  default     = "Standard_B2s" # Minimal VM size (2 vCPUs, 4GB RAM) - fits most quotas
 }
 variable "log_analytics_workspace_id" {
   description = "Log Analytics Workspace ID for monitoring"
