@@ -32,3 +32,6 @@ skip-check:
   # Storage account naming follows Azure rules but may not match Checkov's stricter pattern
   # Our naming ensures uniqueness and follows: lowercase alphanumeric, 3-24 chars, globally unique
   - CKV_AZURE_43
+  
+  # SQL Database Policy - Organizational policy that may be too restrictive for development
+  - bc-azure-229  # SQL Database backup/retention policy compliance

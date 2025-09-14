@@ -9,5 +9,10 @@ resource "azurerm_mssql_database" "sql_db" {
   zone_redundant = false # Disabled for compatibility with all Azure subscriptions
   ledger_enabled = true  # CKV_AZURE_224
 
+  # Backup configuration to comply with bc-azure-229 policy
+  short_term_retention_policy {
+    retention_days = 7
+  }
+
   tags = var.tags
 }
