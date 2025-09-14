@@ -28,7 +28,6 @@ jobs:
       contents: read
       security-events: write
       actions: read
-    labels: ["validation", "security", "terraform"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -120,7 +119,6 @@ jobs:
     runs-on: azure-runner
     needs: validation
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/feature/')
-    labels: ["planning", "terraform", "infrastructure"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -179,12 +177,11 @@ jobs:
     runs-on: azure-runner
     needs: [validation, plan]
     if: github.ref == 'refs/heads/main'
-    labels: ["deployment", "production", "azure"]
     environment: 
       name: production
       url: ${{ steps.deploy.outputs.app_url }}
     steps:
-      - name: 🚨 CRITICAL: Manual Approval Required for Production
+      - name: "CRITICAL: Manual Approval Required for Production"
         run: |
           echo "🚨 CRITICAL: PRODUCTION DEPLOYMENT APPROVAL REQUIRED"
           echo "====================================================="
