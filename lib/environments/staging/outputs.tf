@@ -30,5 +30,5 @@ output "sql_server_fqdn" {
 
 output "app_url" {
   description = "Application URL"
-  value       = "https://${module.aks.cluster_name}.centralindia.cloudapp.azure.com"
+  value       = "https://${module.aks.cluster_name}.eastus.cloudapp.azure.com"
 }
