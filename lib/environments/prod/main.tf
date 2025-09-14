@@ -38,9 +38,18 @@ module "key_vault" {
   # For production, use private endpoints and minimal IP access
   enable_private_endpoint = false # Set to true when VNet is configured
   allowed_ips = [
-    "20.55.0.0/16", # GitHub Actions - West US 2
-    "13.64.0.0/16", # GitHub Actions - East US
-    "52.140.0.0/16" # GitHub Actions - Azure DevOps
+    "20.55.0.0/16",  # GitHub Actions - West US 2
+    "13.64.0.0/16",  # GitHub Actions - East US
+    "13.65.0.0/16",  # GitHub Actions - East US 2  
+    "20.42.0.0/16",  # GitHub Actions - Central US
+    "52.140.0.0/16", # GitHub Actions - Azure DevOps
+    "52.234.0.0/16", # GitHub Actions - Additional range
+    "52.237.0.0/16", # GitHub Actions - Additional range
+    "52.250.0.0/16", # GitHub Actions - Additional range
+    "20.106.0.0/16", # GitHub Actions - Additional range
+    "20.112.0.0/16", # GitHub Actions - Additional range
+    "20.120.0.0/16", # GitHub Actions - Additional range
+    "20.150.0.0/16"  # GitHub Actions - Additional range
     # Note: Remove GitHub Actions IPs post-deployment for maximum security
   ]
 }

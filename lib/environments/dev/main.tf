@@ -37,6 +37,13 @@ module "key_vault" {
     "13.65.0.0/16",  # GitHub Actions - East US 2  
     "20.42.0.0/16",  # GitHub Actions - Central US
     "52.140.0.0/16", # GitHub Actions - Azure DevOps
+    "52.234.0.0/16", # GitHub Actions - Additional range
+    "52.237.0.0/16", # GitHub Actions - Additional range
+    "52.250.0.0/16", # GitHub Actions - Additional range
+    "20.106.0.0/16", # GitHub Actions - Additional range
+    "20.112.0.0/16", # GitHub Actions - Additional range
+    "20.120.0.0/16", # GitHub Actions - Additional range
+    "20.150.0.0/16", # GitHub Actions - Additional range
     "48.214.0.0/16", # GitHub Actions - Additional range
     "40.74.0.0/16",  # GitHub Actions - Additional range
     "20.84.0.0/16",  # GitHub Actions - Additional range
