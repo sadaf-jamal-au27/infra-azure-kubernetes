@@ -397,16 +397,16 @@ az ad sp credential reset --name "github-actions-todoapp-sp"
 }
 ```
 
-### GitHub Secrets Status (OIDC)
+### GitHub Secrets Status (Service Principal)
 - ✅ `AZURE_CLIENT_ID`: Configured
-- ❌ `AZURE_CLIENT_SECRET`: **REMOVED** (No longer needed with OIDC)
+- ✅ `AZURE_CLIENT_SECRET`: Configured
 - ✅ `AZURE_TENANT_ID`: Configured
 - ✅ `AZURE_SUBSCRIPTION_ID`: Configured
+- ✅ `AZURE_CREDENTIALS`: Configured (JSON format)
 
-### Pipeline Integration (OIDC)
-- ✅ OIDC authentication enabled
-- ✅ Short-lived tokens (1 hour)
-- ✅ No client secrets required
+### Pipeline Integration (Service Principal)
+- ✅ Service principal authentication enabled
+- ✅ Secure credential management
 - ✅ Terraform provider configured
 - ✅ Azure CLI authentication ready
 - ✅ Service principal permissions verified
@@ -429,34 +429,31 @@ az ad sp credential reset --name "github-actions-todoapp-sp"
 - ✅ Multi-environment support
 - ✅ Compliance with security best practices
 
-## 🔐 OIDC Implementation Status
+## 🔐 Authentication Implementation Status
 
-**✅ OIDC Successfully Implemented!**
+**✅ Service Principal Authentication Implemented!**
 
-Your pipeline now uses **OpenID Connect (OIDC)** authentication:
+Your pipeline uses **Service Principal** authentication with secure credential management:
 
-### What Changed:
-- **❌ Removed**: Client secret-based authentication
-- **✅ Added**: Token-based OIDC authentication
-- **✅ Enhanced**: Short-lived tokens (1 hour expiration)
-- **✅ Improved**: No long-lived secrets to manage
+### Current Implementation:
+- **✅ Service Principal**: Azure AD application identity
+- **✅ Secure Storage**: Credentials stored in GitHub secrets
+- **✅ JSON Format**: `AZURE_CREDENTIALS` contains all auth details
+- **✅ Automated**: Pipeline handles authentication automatically
 
 ### Current Authentication Flow:
 ```yaml
-- name: Azure Login with OIDC
+- name: Azure Login
   uses: azure/login@v1
   with:
-    client-id: ${{ secrets.AZURE_CLIENT_ID }}
-    tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-    subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    oidc: true  # ✅ Token-based authentication
+    creds: ${{ secrets.AZURE_CREDENTIALS }}  # ✅ Service principal authentication
 ```
 
 ### Benefits Achieved:
-- 🔒 **Enhanced Security**: No client secrets to rotate
-- ⏰ **Short-lived Tokens**: Automatic expiration
-- 📊 **Better Auditing**: Improved authentication tracking
-- 🛡️ **Compliance**: Meets modern security standards
+- 🔒 **Secure Authentication**: Service principal with proper permissions
+- 🔄 **Automated Management**: Credentials managed by GitHub Actions
+- 📊 **Audit Trail**: All authentication events logged
+- 🛡️ **Compliance**: Meets enterprise security standards
 
 ---
 
