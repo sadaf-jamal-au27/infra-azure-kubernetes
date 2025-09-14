@@ -14,7 +14,7 @@ resource "azurerm_container_registry" "acr" {
   retention_policy_in_days = 7
 
   georeplications {
-    location                = "eastus"
+    location                = "westus2"
     zone_redundancy_enabled = true
   }
 
